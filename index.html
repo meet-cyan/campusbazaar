@@ -741,7 +741,7 @@
   document.getElementById('postBtn').onclick = async () => {
     const raw = document.getElementById('rawMsg').value.trim();
     const title = document.getElementById('title').value.trim() || raw.split('\n')[0].slice(0,60) || 'Untitled post';
-    const phone = document.getElementById('phone').value.trim();
+    let phone = document.getElementById('phone').value.trim();
     let tglink = document.getElementById('tglink').value.trim();
     const category = document.getElementById('category').value;
     const priceRaw = document.getElementById('price').value.trim();
@@ -750,9 +750,21 @@
     const seller = document.getElementById('seller').value.trim();
 
     if (!raw && !title) { toast('Paste a message or add a title first'); return; }
-    if (tglink && !tglink.startsWith('http')) {
-      tglink = `https://t.me/${tglink.replace(/^@/, '')}`;
+
+    // Format Telegram Username or Redirect Phone Number to WhatsApp
+    if (tglink) {
+      let cleanTg = tglink.trim().replace(/^@/, '');
+
+      if (/^\+?\d{10,15}$/.test(cleanTg.replace(/[\s-]/g, ''))) {
+        let cleanPhone = cleanTg.replace(/\D/g, '');
+        if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+        if (!phone) phone = cleanPhone;
+        tglink = ''; 
+      } else if (!cleanTg.startsWith('http')) {
+        tglink = `https://t.me/${cleanTg}`;
+      }
     }
+
     if (!phone && !tglink) { toast('Provide either a Telegram handle or Phone number'); return; }
 
     const postBtn = document.getElementById('postBtn');
