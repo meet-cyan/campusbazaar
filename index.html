@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manipal Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#28352d;
+    --bg-2:#1f2922;
+    --paper:#f6efdd;
+    --paper-2:#efe6cd;
+    --ink:#2a2420;
+    --ink-soft:#6b5f52;
+    --line:#d9cca8;
+    --gold:#d8a93a;
+    --gold-ink:#5c4415;
+    --c-buy:#c98a2c;
+    --c-flatmate:#2f8f88;
+    --c-flat:#a15a2a;
+    --c-cab:#c1542c;
+    --c-help:#7a4e82;
+    --c-lost:#3572a5;
+    --c-events:#4c8f4a;
+    --c-other:#7d7768;
+    --radius:3px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(255,255,255,0.03), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 3px),
+      var(--bg);
+    color:var(--paper);
+    font-family:'Work Sans',sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 16px;}
+
+  /* HEADER */
+  header{
+    padding:32px 16px 20px;
+    text-align:center;
+    border-bottom:2px dashed rgba(246,239,221,0.25);
+    margin-bottom:20px;
+  }
+  header .pin{
+    font-size:24px;display:block;margin-bottom:4px;
+    animation: pinDrop .6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes pinDrop{
+    0%{transform:translateY(-44px) rotate(-20deg);opacity:0;}
+    65%{transform:translateY(5px) rotate(4deg);opacity:1;}
+    100%{transform:translateY(0) rotate(0deg);}
+  }
+  .kicker{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.66rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Zilla Slab',serif;
+    font-weight:700;
+    font-size:2.2rem;
+    margin:0;
+    letter-spacing:0.3px;
+    color:var(--paper);
+  }
+  .tagline{
+    font-family:'Zilla Slab',serif;
+    font-weight:500;
+    font-style:italic;
+    font-size:1.05rem;
+    color:var(--gold);
+    margin:8px 0 0;
+  }
+  .rotator{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.78rem;
+    color:#b9c4ba;
+    margin:10px auto 0;
+    max-width:520px;
+    line-height:1.5;
+    min-height:1.4em;
+  }
+  .rotator .cursor{
+    display:inline-block;width:7px;
+    background:var(--gold);
+    animation: blink 0.9s steps(1) infinite;
+    margin-left:1px;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .stats-row{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;
+    color:#8fa197;
+    margin-top:14px;
+    letter-spacing:0.03em;
+  }
+  header a{color:var(--gold);}
+
+  /* TABS */
+  .tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:4px 2px 14px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .tab{
+    flex:0 0 auto;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.75rem;
+    background:var(--bg-2);
+    color:#cfd8d1;
+    border:1px solid rgba(246,239,221,0.2);
+    padding:7px 12px;
+    border-radius:20px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .tab.active{
+    background:var(--gold);
+    color:var(--gold-ink);
+    border-color:var(--gold);
+    font-weight:600;
+  }
+
+  /* SEARCH + ADD BAR */
+  .toolbar{display:flex;gap:8px;margin-bottom:18px;}
+  .search-input{
+    flex:1;
+    background:var(--bg-2);
+    border:1px solid rgba(246,239,221,0.2);
+    color:var(--paper);
+    padding:10px 12px;
+    border-radius:6px;
+    font-family:'Work Sans',sans-serif;
+    font-size:0.9rem;
+  }
+  .search-input::placeholder{color:#93a096;}
+  .btn-pin{
+    background:var(--gold);
+    color:var(--gold-ink);
+    border:none;
+    padding:10px 16px;
+    border-radius:6px;
+    font-weight:600;
+    font-size:0.9rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-pin:active{transform:translateY(1px);}
+  .btn-surprise{
+    background:transparent;
+    color:var(--gold);
+    border:1px solid var(--gold);
+    padding:10px 14px;
+    border-radius:6px;
+    font-weight:600;
+    font-size:0.85rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn-surprise:active{transform:translateY(1px);}
+
+  /* FILTER BAR */
+  .filter-bar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .filter-bar select{
+    flex:1 1 140px;
+    background:var(--bg-2);
+    border:1px solid rgba(246,239,221,0.2);
+    color:var(--paper);
+    padding:8px 10px;
+    border-radius:6px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.75rem;
+  }
+  .filter-bar select option{background:var(--bg-2);color:var(--paper);}
+
+  /* ADD PANEL */
+  .panel{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:8px;
+    padding:18px;
+    margin-bottom:24px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.35);
+    display:none;
+  }
+  .panel.open{display:block;animation:drop .18s ease-out;}
+  @keyframes drop{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+  .panel h3{
+    font-family:'Zilla Slab',serif;
+    margin:0 0 4px;
+    font-size:1.2rem;
+  }
+  .panel .hint{font-size:0.78rem;color:var(--ink-soft);margin:0 0 14px;font-family:'IBM Plex Mono',monospace;}
+  .field{margin-bottom:12px;}
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.7rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+  }
+  textarea, .field input, .field select{
+    width:100%;
+    border:1px solid var(--line);
+    background:#fffdf7;
+    color:var(--ink);
+    padding:9px 10px;
+    border-radius:5px;
+    font-family:'Work Sans',sans-serif;
+    font-size:0.9rem;
+  }
+  textarea{min-height:80px;resize:vertical;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .imgpicker{
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  }
+  .thumb{
+    width:52px;height:52px;border-radius:5px;object-fit:cover;
+    border:1px solid var(--line);
+  }
+  .filelabel{
+    border:1px dashed var(--line);
+    border-radius:5px;
+    padding:14px;
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    text-align:center;
+    cursor:pointer;
+    width:100%;
+  }
+  .panel-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
+  .btn-ghost{
+    background:transparent;border:1px solid var(--line);color:var(--ink-soft);
+    padding:9px 14px;border-radius:6px;cursor:pointer;font-size:0.85rem;
+  }
+  .btn-solid{
+    background:var(--ink);color:var(--paper);border:none;
+    padding:9px 16px;border-radius:6px;cursor:pointer;font-weight:600;font-size:0.85rem;
+  }
+
+  /* GRID */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:22px;
+    padding:6px 2px 2px;
+  }
+  .card{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:2px;
+    padding:14px 14px 12px;
+    position:relative;
+    box-shadow:0 8px 16px rgba(0,0,0,0.28), 0 2px 3px rgba(0,0,0,0.15);
+    transform:rotate(var(--rot,0deg));
+    transition:transform .18s ease, box-shadow .18s ease;
+    cursor:pointer;
+  }
+  .card:hover{
+    transform:rotate(var(--rot,0deg)) translateY(-5px) scale(1.02);
+    box-shadow:0 16px 26px rgba(0,0,0,0.4), 0 3px 5px rgba(0,0,0,0.2);
+  }
+  .card:hover::before{transform:translateX(-50%) rotate(-10deg);}
+  .card::before{transition:transform .18s ease;}
+  .img-wrap{position:relative;}
+  .img-count{
+    position:absolute;bottom:14px;right:6px;
+    background:rgba(0,0,0,0.65);color:#fff;
+    font-family:'IBM Plex Mono',monospace;font-size:0.65rem;
+    padding:2px 7px;border-radius:10px;
+  }
+  .card::before{
+    content:'';
+    position:absolute;
+    top:-9px;left:50%;transform:translateX(-50%);
+    width:16px;height:16px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #ffe8a3, var(--gold) 60%, var(--gold-ink));
+    box-shadow:0 3px 4px rgba(0,0,0,0.4);
+  }
+  .tape{
+    position:absolute;top:8px;right:-6px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.62rem;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    color:#fff;
+    padding:3px 10px 3px 8px;
+    border-radius:2px 0 0 2px;
+    opacity:0.95;
+  }
+  .card img.attach{
+    width:100%;
+    border-radius:4px;
+    margin:8px 0;
+    max-height:160px;
+    object-fit:cover;
+    border:1px solid var(--line);
+  }
+  .card h4{
+    font-family:'Zilla Slab',serif;
+    font-size:1.05rem;
+    margin:10px 0 4px;
+    padding-right:20px;
+  }
+  .card p.desc{
+    font-size:0.85rem;
+    line-height:1.45;
+    color:#4a4038;
+    margin:0 0 10px;
+    white-space:pre-wrap;
+  }
+  .meta{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:10px;
+    border-top:1px dashed var(--line);
+    padding-top:8px;
+  }
+  .actions{display:flex;flex-wrap:wrap;gap:6px;}
+  .actions a, .actions button{
+    flex:1 1 auto;
+    text-align:center;
+    text-decoration:none;
+    font-size:0.75rem;
+    font-weight:600;
+    padding:7px 8px;
+    border-radius:5px;
+    border:none;
+    cursor:pointer;
+  }
+  .a-tg{background:#2AABEE;color:#fff;}
+  .a-wa{background:#2f8f5d;color:#fff;}
+  .a-call{background:var(--ink);color:var(--paper);}
+  .a-link{background:transparent;border:1px solid var(--line)!important;color:var(--ink-soft);}
+  .a-del{background:transparent;border:1px solid #c1542c!important;color:#c1542c;}
+  .a-report{background:transparent;border:1px solid var(--line)!important;color:var(--ink-soft);flex:0 0 auto!important;padding:7px 10px!important;}
+  .a-report.reported{color:#c1542c;border-color:#c1542c!important;}
+  .flag-badge{
+    position:absolute;top:-9px;left:10px;
+    background:#c1542c;color:#fff;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.6rem;text-transform:uppercase;letter-spacing:0.04em;
+    padding:3px 7px;border-radius:2px;
+  }
+  .admin-bar{
+    text-align:center;padding:26px 0 6px;
+  }
+  .admin-link{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;color:#6d7a71;
+    background:none;border:none;cursor:pointer;text-decoration:underline;
+  }
+  .admin-on{color:var(--gold);}
+
+  .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.68rem;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    padding:2px 8px;
+    border-radius:10px;
+  }
+  .tag.price{color:var(--gold-ink);font-weight:600;border-color:var(--gold);}
+  .tag.seller{color:#2f8f88;border-color:#2f8f88;}
+  .featured-badge{
+    position:absolute;top:-9px;right:10px;
+    background:var(--gold);color:var(--gold-ink);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.6rem;text-transform:uppercase;letter-spacing:0.04em;
+    padding:3px 7px;border-radius:2px;
+  }
+  .a-feature{background:transparent;border:1px solid var(--gold)!important;color:var(--gold-ink);flex:0 0 auto!important;padding:7px 10px!important;}
+  .a-feature.on{background:var(--gold);color:var(--gold-ink);}
+  .a-save{background:transparent;border:1px solid #c1542c!important;color:#c1542c;flex:0 0 auto!important;padding:7px 10px!important;}
+  .a-save.on{background:#c1542c;color:#fff;}
+
+  .meta-phone{cursor:pointer;text-decoration:underline dotted;}
+  .meta-phone:hover{color:var(--gold-ink);}
+
+  /* MODAL */
+  .modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(20,24,20,0.72);
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding:40px 16px;
+    overflow-y:auto;
+    z-index:100;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:var(--paper);
+    color:var(--ink);
+    max-width:460px;
+    width:100%;
+    border-radius:8px;
+    padding:22px 20px;
+    position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,0.5);
+    animation:pop .15s ease-out;
+  }
+  @keyframes pop{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:scale(1);}}
+  .modal-close{
+    position:absolute;top:12px;right:12px;
+    background:none;border:none;font-size:1.1rem;
+    color:var(--ink-soft);cursor:pointer;
+    width:30px;height:30px;
+  }
+  .modal-title{font-family:'Zilla Slab',serif;font-size:1.3rem;margin:12px 0 6px;padding-right:24px;}
+  .modal-desc{font-size:0.9rem;line-height:1.55;color:#4a4038;white-space:pre-wrap;margin:10px 0;}
+  .modal-gallery{position:relative;margin:10px 0;}
+  .modal-img{width:100%;max-height:280px;object-fit:cover;border-radius:6px;border:1px solid var(--line);display:block;}
+  .gal-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(0,0,0,0.5);color:#fff;border:none;
+    width:32px;height:32px;border-radius:50%;font-size:1.1rem;cursor:pointer;
+  }
+  .gal-nav.prev{left:8px;}
+  .gal-nav.next{right:8px;}
+  .gal-dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;}
+  .gal-dots .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.5);}
+  .gal-dots .dot.active{background:#fff;}
+
+  .empty{
+    text-align:center;
+    padding:60px 20px;
+    color:#9fada4;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.85rem;
+  }
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--gold);color:var(--gold-ink);
+    padding:10px 18px;border-radius:20px;font-size:0.85rem;font-weight:600;
+    box-shadow:0 6px 16px rgba(0,0,0,0.3);
+    opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+
+  .confetti-piece{
+    position:fixed;top:45%;z-index:999;pointer-events:none;
+    animation:confettiFall 1.4s ease-in forwards;
+  }
+  @keyframes confettiFall{
+    0%{transform:translateY(0) rotate(0deg);opacity:1;}
+    100%{transform:translateY(220px) rotate(360deg);opacity:0;}
+  }
+
+  @media(max-width:480px){
+    h1{font-size:1.6rem;}
+    .row2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="pin">📌</span>
+    <span class="kicker">est. because group chats forget</span>
+    <h1>Manipal Board</h1>
+    <p class="tagline">Telegram buries it. We pin it.</p>
+    <p class="rotator" id="rotator"><span id="rotatorText"></span><span class="cursor">&nbsp;</span></p>
+    <p class="stats-row" id="statsRow"></p>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="toolbar">
+    <input class="search-input" id="search" placeholder="Search posts…">
+    <button class="btn-surprise" id="surpriseBtn">🎲 Surprise me</button>
+    <button class="btn-pin" id="toggleBtn">+ Pin a post</button>
+  </div>
+
+  <div class="filter-bar">
+    <select id="sortSel">
+      <option value="newest">Sort: Newest first</option>
+      <option value="featured">Sort: Featured first</option>
+      <option value="price-desc">Sort: Price high → low</option>
+      <option value="price-asc">Sort: Price low → high</option>
+      <option value="az">Sort: A → Z</option>
+    </select>
+    <select id="dealerSel">
+      <option value="all">Dealer: All</option>
+    </select>
+    <select id="sizeSel">
+      <option value="all">Size: All</option>
+    </select>
+  </div>
+
+  <div class="panel" id="panel">
+    <h3>Pin a new post</h3>
+    <p class="hint">Paste raw Telegram text or fill out details. At least one contact method (Telegram handle or phone) is required.</p>
+
+    <div class="field">
+      <label>Paste message</label>
+      <textarea id="rawMsg" placeholder="e.g. Selling study table, barely used, 1200rs. Contact @username or 98765xxxxx"></textarea>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Category</label>
+        <select id="category">
+          <option value="buy-sell">💰 Buy & Sell</option>
+          <option value="flatmate">🔍 Find Flatmates</option>
+          <option value="flat">🏠 Flats for Rent</option>
+          <option value="cab">🚗 Find Cab Mate</option>
+          <option value="help">🆘 Ask Help</option>
+          <option value="lost">👮 Lost & Found</option>
+          <option value="events">🎤 Free Events</option>
+          <option value="other">🗂️ Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Title (short)</label>
+        <input id="title" placeholder="e.g. Study table for sale">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Telegram Handle / Link (Private)</label>
+        <input id="tglink" placeholder="e.g. @username or t.me/username">
+      </div>
+      <div class="field">
+        <label>Phone / WhatsApp number (Optional)</label>
+        <input id="phone" placeholder="Only if you want direct calls/WA">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Price in ₹ (optional)</label>
+        <input id="price" type="number" min="0" placeholder="e.g. 1200">
+      </div>
+      <div class="field">
+        <label>Size (optional)</label>
+        <input id="size" placeholder="e.g. M, UK 9, 3BHK">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Seller / dealer name (optional)</label>
+      <input id="seller" placeholder="So repeat sellers can be found by name">
+    </div>
+
+    <div class="field">
+      <label>Photos (optional, up to 3)</label>
+      <label class="filelabel" id="fileLabel">Tap to add images</label>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
+      <div class="imgpicker" id="imgPreview"></div>
+    </div>
+
+    <div class="panel-actions">
+      <button class="btn-ghost" id="cancelBtn">Cancel</button>
+      <button class="btn-solid" id="postBtn">Pin it</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="emptyState" style="display:none;">Nothing pinned here yet — be the first.</div>
+
+  <div class="admin-bar">
+    <button class="admin-link" id="adminLink">Admin</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATS = {
+  'buy-sell':  {label:'Buy & Sell',     emoji:'💰', color:'var(--c-buy)'},
+  'flatmate':  {label:'Find Flatmates', emoji:'🔍', color:'var(--c-flatmate)'},
+  'flat':      {label:'Flats for Rent', emoji:'🏠', color:'var(--c-flat)'},
+  'cab':       {label:'Find Cab Mate',  emoji:'🚗', color:'var(--c-cab)'},
+  'help':      {label:'Ask Help',       emoji:'🆘', color:'var(--c-help)'},
+  'lost':      {label:'Lost & Found',   emoji:'👮', color:'var(--c-lost)'},
+  'events':    {label:'Free Events',    emoji:'🎤', color:'var(--c-events)'},
+  'other':     {label:'Other',          emoji:'🗂️', color:'var(--c-other)'}
+};
+const KEYWORDS = {
+  'flatmate': ['flatmate','roommate','room mate','looking for a male','looking for a female','sharing room'],
+  'flat': ['bhk','flat for rent','pg for','vacant room','rent per month','flat available'],
+  'cab': ['cab share','cab mate','airport to manipal','manipal to','ride share','carpool'],
+  'help': ['check in vrl','help needed','anyone know','urgent help','need help'],
+  'lost': ['lost my','found a','lost and found','ive lost','i lost'],
+  'events': ['free event','open mic','fest','workshop','concert']
+};
+const STORAGE_KEY = 'board_items_v1';
+const MINE_KEY = 'my_posted_ids_v1';
+const REPORTED_KEY = 'reported_ids_v1';
+const FLAG_THRESHOLD = 3;
+const ADMIN_CODE = 'board-admin-2026';
+let items = [];
+let mine = [];
+let reported = [];
+let isAdmin = false;
+let activeCat = 'all';
+let pendingImages = [];
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+const TAGLINES = [
+  'Selling something? Say it once — not five times a day.',
+  'Lost your earbuds? Someone probably found them here.',
+  'Cab to the airport? Someone else is already going.',
+  'Need a flatmate? Skip the 300-message scroll.',
+  'Pin it once. Everyone sees it, nobody re-asks.'
+];
+let taglineIdx = 0;
+function typeTagline(){
+  const el = document.getElementById('rotatorText');
+  if(!el) return;
+  const phrase = TAGLINES[taglineIdx % TAGLINES.length];
+  let i = 0;
+  el.textContent = '';
+  const typeStep = ()=>{
+    if(i <= phrase.length){
+      el.textContent = phrase.slice(0, i);
+      i++;
+      setTimeout(typeStep, 28);
+    }else{
+      setTimeout(eraseStep, 2200);
+    }
+  };
+  const eraseStep = ()=>{
+    if(i >= 0){
+      el.textContent = phrase.slice(0, i);
+      i--;
+      setTimeout(eraseStep, 14);
+    }else{
+      taglineIdx++;
+      setTimeout(typeTagline, 300);
+    }
+  };
+  typeStep();
+}
+
+function confettiBurst(){
+  const emojis = ['📌','📎','✂️','🧷','📍'];
+  for(let i=0;i<14;i++){
+    const el = document.createElement('span');
+    el.className = 'confetti-piece';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left = (42 + Math.random()*16) + '%';
+    el.style.animationDelay = (Math.random()*0.25) + 's';
+    el.style.fontSize = (14 + Math.random()*10) + 'px';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 1600);
+  }
+}
+
+function surpriseMe(){
+  if(!items.length){ toast("Nothing pinned yet — you could be first!"); return; }
+  const pick = items[Math.floor(Math.random()*items.length)];
+  activeCat = 'all';
+  document.getElementById('search').value = '';
+  document.getElementById('dealerSel').value = 'all';
+  document.getElementById('sizeSel').value = 'all';
+  document.getElementById('sortSel').value = 'newest';
+  render();
+  requestAnimationFrame(()=>{
+    const el = document.getElementById('card-'+pick.id);
+    if(el){
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      el.classList.add('highlight-pulse');
+      setTimeout(()=>el.classList.remove('highlight-pulse'), 2400);
+    }
+  });
+}
+
+function extractPhone(text){
+  const m = text.match(/(?:\+?91[\s-]?)?[6-9]\d{9}/);
+  return m ? m[0].replace(/\s|-/g,'') : '';
+}
+function extractLink(text){
+  const m = text.match(/(?:https?:\/\/)?t\.me\/([a-zA-Z0-9_]{5,})/i) || text.match(/@([a-zA-Z0-9_]{5,})/);
+  if(m){
+    return m[1].startsWith('http') ? m[0] : `https://t.me/${m[1]}`;
+  }
+  return '';
+}
+function guessCategory(text){
+  const low = text.toLowerCase();
+  for(const [cat, words] of Object.entries(KEYWORDS)){
+    if(words.some(w=>low.includes(w))) return cat;
+  }
+  return 'buy-sell';
+}
+function whatsappLink(phone){
+  let n = phone.replace(/\D/g,'');
+  if(n.length===10) n = '91'+n;
+  return 'https://wa.me/'+n;
+}
+function timeAgo(ts){
+  const s = Math.floor((Date.now()-ts)/1000);
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+
+async function loadItems(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    items = res ? JSON.parse(res.value) : [];
+  }catch(e){ items = []; }
+  try{
+    const res2 = await window.storage.get(MINE_KEY, false);
+    mine = res2 ? JSON.parse(res2.value) : [];
+  }catch(e){ mine = []; }
+  try{
+    const res3 = await window.storage.get(REPORTED_KEY, false);
+    reported = res3 ? JSON.parse(res3.value) : [];
+  }catch(e){ reported = []; }
+  render();
+}
+async function saveItems(){
+  await window.storage.set(STORAGE_KEY, JSON.stringify(items), true);
+}
+async function saveMine(){
+  await window.storage.set(MINE_KEY, JSON.stringify(mine), false);
+}
+async function saveReported(){
+  await window.storage.set(REPORTED_KEY, JSON.stringify(reported), false);
+}
+
+function buildTabs(){
+  const tabsEl = document.getElementById('tabs');
+  const counts = {};
+  items.forEach(it=>counts[it.category]=(counts[it.category]||0)+1);
+  let html = `<div class="tab ${activeCat==='all'?'active':''}" data-cat="all">All (${items.length})</div>`;
+  for(const [key,c] of Object.entries(CATS)){
+    html += `<div class="tab ${activeCat===key?'active':''}" data-cat="${key}">${c.emoji} ${c.label} (${counts[key]||0})</div>`;
+  }
+  const flaggedCount = items.filter(i=>(i.reportCount||0)>=FLAG_THRESHOLD).length;
+  if(flaggedCount){
+    html += `<div class="tab ${activeCat==='flagged'?'active':''}" data-cat="flagged">⚠️ Flagged (${flaggedCount})</div>`;
+  }
+  tabsEl.innerHTML = html;
+  tabsEl.querySelectorAll('.tab').forEach(t=>{
+    t.onclick = ()=>{ activeCat = t.dataset.cat; render(); };
+  });
+}
+
+function buildFilters(){
+  const dealerSel = document.getElementById('dealerSel');
+  const sizeSel = document.getElementById('sizeSel');
+  const curDealer = dealerSel.value;
+  const curSize = sizeSel.value;
+
+  const dealerCounts = {};
+  items.forEach(it=>{
+    const key = (it.seller && it.seller.trim()) || it.phone || it.tglink;
+    if(!key) return;
+    dealerCounts[key] = dealerCounts[key] || {count:0, label: it.seller && it.seller.trim() ? it.seller.trim() : (it.phone || it.tglink)};
+    dealerCounts[key].count++;
+  });
+  let dealerHtml = `<option value="all">Dealer: All</option>`;
+  Object.entries(dealerCounts)
+    .sort((a,b)=>b[1].count-a[1].count)
+    .forEach(([key,v])=>{
+      dealerHtml += `<option value="${escapeHtml(key)}">${v.count>=2?'🔥 ':''}${escapeHtml(v.label)} (${v.count})</option>`;
+    });
+  dealerSel.innerHTML = dealerHtml;
+  if([...dealerSel.options].some(o=>o.value===curDealer)) dealerSel.value = curDealer;
+
+  const sizes = [...new Set(items.map(i=>i.size).filter(Boolean))].sort();
+  let sizeHtml = `<option value="all">Size: All</option>`;
+  sizes.forEach(s=> sizeHtml += `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`);
+  sizeSel.innerHTML = sizeHtml;
+  if([...sizeSel.options].some(o=>o.value===curSize)) sizeSel.value = curSize;
+}
+
+const EMPTY_MESSAGES = {
+  all: "Nothing pinned yet — be Manipal's first.",
+  'buy-sell': "No one's selling anything right now. First one in gets first dibs.",
+  flatmate: "No flatmate posts yet. Somebody out there needs your empty room.",
+  flat: "No flats listed. Somebody's landlord is missing out.",
+  cab: "No cab shares yet. Split that airport fare — someone's waiting.",
+  help: "No SOS posts right now. Manipal's having a suspiciously smooth day.",
+  lost: "Nothing lost, nothing found. Suspiciously honest, Manipal.",
+  events: "No free events pinned. Be the reason someone's weekend gets better.",
+  other: "Nothing here yet. Could be your post.",
+  flagged: "Nothing flagged. The board's behaving itself."
+};
+
+function updateStats(){
+  const now = Date.now();
+  const today = items.filter(i => now - i.ts < 86400000).length;
+  document.getElementById('statsRow').textContent =
+    `📌 ${items.length} pinned overall · ⚡ ${today} in the last 24h`;
+}
+
+function render(){
+  buildTabs();
+  buildFilters();
+  updateStats();
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const sortBy = document.getElementById('sortSel').value;
+  const dealerFilter = document.getElementById('dealerSel').value;
+  const sizeFilter = document.getElementById('sizeSel').value;
+  const grid = document.getElementById('grid');
+
+  const dealerCounts = {};
+  items.forEach(it=>{
+    const key = (it.seller && it.seller.trim()) || it.phone || it.tglink;
+    if(key) dealerCounts[key] = (dealerCounts[key]||0)+1;
+  });
+
+  let list = items.slice();
+  if(activeCat==='flagged') list = list.filter(i=>(i.reportCount||0)>=FLAG_THRESHOLD);
+  else if(activeCat!=='all') list = list.filter(i=>i.category===activeCat);
+  if(q) list = list.filter(i => (i.title+' '+i.desc).toLowerCase().includes(q));
+  if(dealerFilter!=='all') list = list.filter(i => ((i.seller && i.seller.trim()) || it.phone || it.tglink) === dealerFilter);
+  if(sizeFilter!=='all') list = list.filter(i => i.size === sizeFilter);
+
+  if(sortBy==='featured'){
+    list.sort((a,b)=> (b.featured?1:0)-(a.featured?1:0) || b.ts-a.ts);
+  }else if(sortBy==='price-desc'){
+    list.sort((a,b)=> (b.price ?? -1) - (a.price ?? -1));
+  }else if(sortBy==='price-asc'){
+    list.sort((a,b)=>{
+      const ap = a.price===undefined||a.price===''?Infinity:a.price;
+      const bp = b.price===undefined||b.price===''?Infinity:b.price;
+      return ap-bp;
+    });
+  }else if(sortBy==='az'){
+    list.sort((a,b)=> a.title.localeCompare(b.title));
+  }else{
+    list.sort((a,b)=>b.ts-a.ts);
+  }
+
+  const emptyEl = document.getElementById('emptyState');
+  emptyEl.style.display = list.length ? 'none' : 'block';
+  emptyEl.textContent = EMPTY_MESSAGES[activeCat] || EMPTY_MESSAGES.all;
+
+  grid.innerHTML = list.map(it=>{
+    const cat = CATS[it.category] || CATS.other;
+    const rot = ((it.id % 5) - 2) * 0.6;
+    const isMine = mine.includes(it.id);
+    const isFlagged = (it.reportCount||0) >= FLAG_THRESHOLD;
+    const alreadyReported = reported.includes(it.id);
+    const dealerKey = (it.seller && it.seller.trim()) || it.phone || it.tglink;
+    const isFrequent = dealerKey && dealerCounts[dealerKey] >= 2;
+
+    let actions = '';
+    if(it.tglink){
+      actions += `<a class="a-tg" target="_blank" href="${it.tglink}">Telegram</a>`;
+    }
+    if(it.phone){
+      actions += `<a class="a-wa" target="_blank" href="${whatsappLink(it.phone)}">WhatsApp</a>`;
+      actions += `<a class="a-call" href="tel:${it.phone}">Call</a>`;
+    }
+
+    actions += `<button class="a-report ${alreadyReported?'reported':''}" ${alreadyReported?'disabled':''} onclick="reportItem(${it.id})">${alreadyReported?'Reported':'Report'}</button>`;
+    if(isAdmin){
+      actions += `<button class="a-feature ${it.featured?'on':''}" onclick="toggleFeatured(${it.id})">${it.featured?'★ Featured':'☆ Feature'}</button>`;
+    }
+    if(isMine || isAdmin){
+      actions += `<button class="a-del" onclick="deleteItem(${it.id})">Delete</button>`;
+    }
+    const img = (it.images && it.images[0]) ? `<img class="attach" src="${it.images[0]}">` : '';
+    const flagBadge = isFlagged ? `<span class="flag-badge">⚠️ ${it.reportCount} reports</span>` : '';
+    const featuredBadge = it.featured ? `<span class="featured-badge">★ Featured</span>` : '';
+
+    let tags = '';
+    if(it.price!==undefined && it.price!=='') tags += `<span class="tag price">₹${it.price}</span>`;
+    if(it.size) tags += `<span class="tag">${escapeHtml(it.size)}</span>`;
+    if(it.seller) tags += `<span class="tag seller">${isFrequent?'🔥 ':''}${escapeHtml(it.seller)}</span>`;
+    const tagRow = tags ? `<div class="tag-row">${tags}</div>` : '';
+
+    return `<div class="card" id="card-${it.id}" style="--rot:${rot}deg">
+      ${flagBadge}${featuredBadge}
+      <span class="tape" style="background:${cat.color}">${cat.emoji} ${cat.label}</span>
+      <h4>${escapeHtml(it.title)}</h4>
+      ${tagRow}
+      ${img}
+      <p class="desc">${escapeHtml(it.desc)}</p>
+      <div class="meta"><span>${timeAgo(it.ts)}</span><span>${it.phone ? '📞 '+it.phone : (it.tglink ? '✈️ Telegram' : '')}</span></div>
+      <div class="actions">${actions}</div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+window.deleteItem = async function(id){
+  if(!confirm('Remove this post?')) return;
+  items = items.filter(i=>i.id!==id);
+  mine = mine.filter(i=>i!==id);
+  await saveItems();
+  await saveMine();
+  render();
+  toast('Removed');
+};
+
+window.reportItem = async function(id){
+  if(reported.includes(id)) return;
+  const it = items.find(i=>i.id===id);
+  if(!it) return;
+  it.reportCount = (it.reportCount||0) + 1;
+  reported.push(id);
+  await saveItems();
+  await saveReported();
+  render();
+  toast(it.reportCount >= FLAG_THRESHOLD ? 'Reported — now flagged for review' : 'Reported, thanks');
+};
+
+window.toggleFeatured = async function(id){
+  const it = items.find(i=>i.id===id);
+  if(!it) return;
+  it.featured = !it.featured;
+  await saveItems();
+  render();
+  toast(it.featured ? 'Marked as featured' : 'Removed from featured');
+};
+
+document.getElementById('adminLink').onclick = ()=>{
+  if(isAdmin){
+    isAdmin = false;
+    document.getElementById('adminLink').textContent = 'Admin';
+    document.getElementById('adminLink').classList.remove('admin-on');
+    render();
+    toast('Admin mode off');
+    return;
+  }
+  const code = prompt('Admin passcode:');
+  if(code === ADMIN_CODE){
+    isAdmin = true;
+    document.getElementById('adminLink').textContent = 'Admin mode: ON (tap to exit)';
+    document.getElementById('adminLink').classList.add('admin-on');
+    toast('Admin mode on — you can delete any post');
+    render();
+  }else if(code !== null){
+    toast('Wrong passcode');
+  }
+};
+
+function compressImage(file){
+  return new Promise((resolve)=>{
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const maxW = 800;
+        const scale = Math.min(1, maxW/img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width*scale;
+        canvas.height = img.height*scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL('image/jpeg',0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('toggleBtn').onclick = ()=>{
+  document.getElementById('panel').classList.add('open');
+  window.scrollTo({top:200,behavior:'smooth'});
+};
+document.getElementById('cancelBtn').onclick = ()=>{
+  document.getElementById('panel').classList.remove('open');
+  resetForm();
+};
+document.getElementById('rawMsg').addEventListener('input', (e)=>{
+  const text = e.target.value;
+  const phone = extractPhone(text);
+  const link = extractLink(text);
+  if(phone) document.getElementById('phone').value = phone;
+  if(link) document.getElementById('tglink').value = link;
+  if(!document.getElementById('title').value){
+    document.getElementById('category').value = guessCategory(text);
+  }
+});
+document.getElementById('fileLabel').onclick = ()=>document.getElementById('fileInput').click();
+document.getElementById('fileInput').addEventListener('change', async (e)=>{
+  const files = Array.from(e.target.files).slice(0,3-pendingImages.length);
+  for(const f of files){
+    const dataUrl = await compressImage(f);
+    pendingImages.push(dataUrl);
+  }
+  renderPreview();
+});
+function renderPreview(){
+  document.getElementById('imgPreview').innerHTML = pendingImages.map(src=>`<img class="thumb" src="${src}">`).join('');
+}
+function resetForm(){
+  document.getElementById('rawMsg').value='';
+  document.getElementById('title').value='';
+  document.getElementById('phone').value='';
+  document.getElementById('tglink').value='';
+  document.getElementById('price').value='';
+  document.getElementById('size').value='';
+  document.getElementById('seller').value='';
+  document.getElementById('category').value='buy-sell';
+  pendingImages = [];
+  renderPreview();
+}
+
+document.getElementById('postBtn').onclick = async ()=>{
+  const raw = document.getElementById('rawMsg').value.trim();
+  const title = document.getElementById('title').value.trim() || raw.split('\n')[0].slice(0,60) || 'Untitled post';
+  const phone = document.getElementById('phone').value.trim();
+  let tglink = document.getElementById('tglink').value.trim();
+  const category = document.getElementById('category').value;
+  const priceRaw = document.getElementById('price').value.trim();
+  const price = priceRaw === '' ? undefined : Number(priceRaw);
+  const size = document.getElementById('size').value.trim();
+  const seller = document.getElementById('seller').value.trim();
+
+  if(!raw && !title){ 
+    toast('Paste a message or add a title first'); 
+    return; 
+  }
+
+  if (tglink && !tglink.startsWith('http')) {
+    const cleanHandle = tglink.replace(/^@/, '');
+    tglink = `https://t.me/${cleanHandle}`;
+  }
+
+  if (!phone && !tglink) {
+    toast('Provide either a Telegram handle or Phone number');
+    return;
+  }
+
+  const item = {
+    id: Date.now(),
+    category, title, desc: raw, phone, tglink, price, size, seller,
+    featured: false,
+    images: pendingImages.slice(),
+    ts: Date.now()
+  };
+  items.push(item);
+  mine.push(item.id);
+  document.getElementById('postBtn').disabled = true;
+  try{
+    await saveItems();
+    await saveMine();
+    confettiBurst();
+    toast('📌 Pinned! Let\'s see who bites.');
+  }catch(err){
+    toast('Could not save — try again');
+  }
+  document.getElementById('postBtn').disabled = false;
+  document.getElementById('panel').classList.remove('open');
+  resetForm();
+  render();
+};
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('sortSel').addEventListener('change', render);
+document.getElementById('dealerSel').addEventListener('change', render);
+document.getElementById('sizeSel').addEventListener('change', render);
+document.getElementById('surpriseBtn').addEventListener('click', surpriseMe);
+
+typeTagline();
+loadItems();
+</script>
+</body>
+</html>
