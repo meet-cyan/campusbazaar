@@ -1118,5 +1118,61 @@ document.getElementById('surpriseBtn').addEventListener('click', surpriseMe);
 typeTagline();
 loadItems();
 </script>
+  <!-- Firebase Configuration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMt38y6wPkAYLRfn4XL1p2yAmKVSoiKIo",
+    authDomain: "manipal-board.firebaseapp.com",
+    projectId: "manipal-board",
+    storageBucket: "manipal-board.firebasestorage.app",
+    messagingSenderId: "610714954515",
+    appId: "1:610714954515:web:af3e8aac1c80165128c8e6",
+    measurementId: "G-F0VYTZ9D56"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  window.db = getFirestore(app);
+  // Function to add a new item to Firestore
+async function addItemToDB(itemData) {
+  try {
+    const docRef = await addDoc(collection(db, "items"), itemData);
+    console.log("Document written with ID: ", docRef.id);
+    return docRef.id;
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+// Function to fetch all items from Firestore
+async function getItemsFromDB() {
+  const querySnapshot = await getDocs(collection(db, "items"));
+  const items = [];
+  querySnapshot.forEach((doc) => {
+    items.push({ id: doc.id, ...doc.data() });
+  });
+  return items;
+}
+
+// Function to delete an item by ID from Firestore
+async function deleteItemFromDB(itemId) {
+  try {
+    await deleteDoc(doc(db, "items", itemId));
+    console.log("Document deleted with ID: ", itemId);
+  } catch (e) {
+    console.error("Error deleting document: ", e);
+  }
+}
+
+// Make functions available globally so your existing script can call them
+window.addItemToDB = addItemToDB;
+window.getItemsFromDB = getItemsFromDB;
+window.deleteItemFromDB = deleteItemFromDB;
+
+</script>
+
 </body>
 </html>
