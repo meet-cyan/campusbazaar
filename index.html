@@ -412,6 +412,53 @@
       flex: 1;
     }
   }
+    /* Contact Section Styling */
+  .contact-section {
+    background: var(--paper-2);
+    border: 1px dashed var(--line);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .contact-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .contact-header label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .contact-hint {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .contact-row {
+    align-items: center;
+  }
+  .contact-divider {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--gold-ink);
+    background: var(--gold);
+    padding: 4px 8px;
+    border-radius: 12px;
+    align-self: center;
+    margin-top: 10px;
+  }
+  @media (max-width: 600px) {
+    .contact-divider {
+      margin: 4px 0;
+      align-self: center;
+    }
+  }
 </style>
 </head>
 <body>
@@ -479,16 +526,25 @@
           <input type="text" id="title" placeholder="e.g. Study table for sale">
         </div>
       </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>TELEGRAM HANDLE <span class="req">*</span></label>
-          <input type="text" id="tglink" placeholder="e.g. @username">
+      <!-- CONTACT OPTIONS SECTION -->
+      <div class="contact-section">
+        <div class="contact-header">
+          <label>CONTACT METHOD <span class="req">*</span></label>
+          <span class="contact-hint">(Fill at least one)</span>
         </div>
 
-        <div class="form-group">
-          <label>PHONE / WHATSAPP <span class="req">*</span></label>
-          <input type="text" id="phone" placeholder="e.g. 9876543210">
+        <div class="form-row contact-row">
+          <div class="form-group">
+            <label for="tglink">TELEGRAM HANDLE</label>
+            <input type="text" id="tglink" placeholder="e.g. @username">
+          </div>
+
+          <div class="contact-divider">OR</div>
+
+          <div class="form-group">
+            <label for="phone">PHONE / WHATSAPP</label>
+            <input type="text" id="phone" placeholder="e.g. 9876543210">
+          </div>
         </div>
       </div>
 
@@ -887,6 +943,12 @@
   document.getElementById('sortSel').addEventListener('change', render);
   document.getElementById('dealerSel').addEventListener('change', render);
   document.getElementById('sizeSel').addEventListener('change', render);
+      // Check if AT LEAST ONE contact option is provided
+    if (!phone && !tglink) { 
+      toast('Please enter a Telegram handle OR a Phone number!'); 
+      return; 
+    }
+
 </script>
 </body>
 </html>
