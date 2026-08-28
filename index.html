@@ -477,18 +477,28 @@
     h1{font-size:1.6rem;}
     .row2{grid-template-columns:1fr;}
   }
-  /* Mobile fix for Pin button overflow */
+/* Mobile responsive fix */
 @media (max-width: 600px) {
-  /* Replace these class names with your actual HTML class names if different */
-  .search-controls-container {
-    flex-wrap: wrap;
-    gap: 8px;
+  /* Wrap control items so buttons drop down cleanly instead of bleeding off-screen */
+  .controls-row,
+  .search-row,
+  div:has(> .btn-pin) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
-  
-  .pin-post-btn, 
-  .surprise-btn {
-    max-width: 100%;
-    box-sizing: border-box;
+
+  /* Make search inputs and buttons scale nicely on narrow mobile screens */
+  .search-input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .btn-pin,
+  .btn-surprise {
+    flex: 1 1 auto;
+    text-align: center;
+    white-space: normal !important;
   }
 }
 </style>
