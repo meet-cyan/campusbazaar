@@ -607,7 +607,7 @@
     storageBucket: "manipal-board.firebasestorage.app",
     messagingSenderId: "610714954515",
     appId: "1:610714954515:web:af3e8aac1c80165128c8e6",
-    measurementId: "G-F0VYTZ9D56"
+    measurementId: "G-F0VYVY7D56"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -619,10 +619,7 @@
     'flatmate':  {label:'Find Flatmates', emoji:'🔍', color:'var(--c-flatmate)'},
     'flat':      {label:'Flats for Rent', emoji:'🏠', color:'var(--c-flat)'},
     'cab':       {label:'Find Cab Mate',  emoji:'🚗', color:'var(--c-cab)'},
-    'help':      {label:'Ask Help',       emoji:'🆘', color:'var(--c-help)'},
-    'lost':      {label:'Lost & Found',   emoji:'👮', color:'var(--c-lost)'},
-    'events':    {label:'Campus Events',    emoji:'🎤', color:'var(--c-events)'},
-    'other':     {label:'Other',          emoji:'🗂️', color:'var(--c-other)'}
+    'lost':      {label:'Lost & Found',   emoji:'👮', color:'var(--c-lost)'}
   };
 
   const FLAG_THRESHOLD = 3;
@@ -633,7 +630,7 @@
   let reported = JSON.parse(localStorage.getItem('reported_ids_v1') || '[]');
   let isAdmin = false;
   let activeCat = 'all';
-  let pendingMedia = []; // Stores Base64 media files (images or video)
+  let pendingMedia = [];
 
   function toast(msg){
     const t = document.getElementById('toast');
@@ -644,6 +641,15 @@
 
   function escapeHtml(s){
     return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Sanitizes Telegram Handle / URL strictly to avoid XSS
+  function sanitizeTgLink(input) {
+    if (!input) return '';
+    let clean = input.trim().replace(/^@/, '');
+    if (/^\+?\d{10,15}$/.test(clean.replace(/[\s-]/g, ''))) return '';
+    clean = clean.replace(/[^a-zA-Z0-9_.]/g, '');
+    return clean ? `https://t.me/${clean}` : '';
   }
 
   function whatsappLink(phone){
@@ -660,7 +666,7 @@
     return Math.floor(s/86400)+'d ago';
   }
 
-  // Handle Media Picker (Images & Videos)
+  // Handle Media Picker
   const imgDrop = document.getElementById('imgDrop');
   const imgInput = document.getElementById('imgInput');
   const mediaPreview = document.getElementById('mediaPreview');
@@ -675,9 +681,9 @@
     }
 
     files.forEach(file => {
-      // Limit file size to ~6MB for Firestore Base64 encoding
-      if (file.size > 6 * 1024 * 1024) {
-        toast(`File ${file.name} exceeds 6MB size limit`);
+      // Strictly limit file size to 750KB to avoid document size overflow in Firestore
+      if (file.size > 750 * 1024) {
+        toast(`File "${file.name}" is too large. Max size is 750KB.`);
         return;
       }
       const reader = new FileReader();
@@ -693,14 +699,14 @@
   function renderMediaPreviews() {
     mediaPreview.innerHTML = pendingMedia.map((m, idx) => {
       if (m.type === 'video') {
-        return `<div style="position:relative;display:inline-block;">
-          <video src="${m.data}" class="thumb" muted></video>
-          <span style="position:absolute;top:2px;right:2px;background:red;color:#fff;font-size:9px;padding:2px 4px;border-radius:3px;cursor:pointer;" onclick="window.removeMedia(${idx})">✕</span>
+        return `<div style="position:relative;display:inline-block;margin-right:6px;">
+          <video src="${m.data}" class="thumb" style="width:60px;height:60px;object-fit:cover;border-radius:6px;" muted></video>
+          <span style="position:absolute;top:-4px;right:-4px;background:#ff4d4d;color:#fff;font-size:10px;width:18px;height:18px;line-height:18px;text-align:center;border-radius:50%;cursor:pointer;" onclick="window.removeMedia(${idx})">✕</span>
         </div>`;
       }
-      return `<div style="position:relative;display:inline-block;">
-        <img src="${m.data}" class="thumb">
-        <span style="position:absolute;top:2px;right:2px;background:red;color:#fff;font-size:9px;padding:2px 4px;border-radius:3px;cursor:pointer;" onclick="window.removeMedia(${idx})">✕</span>
+      return `<div style="position:relative;display:inline-block;margin-right:6px;">
+        <img src="${m.data}" class="thumb" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">
+        <span style="position:absolute;top:-4px;right:-4px;background:#ff4d4d;color:#fff;font-size:10px;width:18px;height:18px;line-height:18px;text-align:center;border-radius:50%;cursor:pointer;" onclick="window.removeMedia(${idx})">✕</span>
       </div>`;
     }).join('');
   }
@@ -710,7 +716,7 @@
     renderMediaPreviews();
   };
 
-  // ISSUE 3 FIX: Tailor form labels and placeholders dynamically based on Category Selection
+  // Tailor form labels dynamically
   const categorySelect = document.getElementById('category');
   function adaptFormToCategory() {
     const cat = categorySelect.value;
@@ -724,7 +730,6 @@
     const lblSize = document.getElementById('lbl-size');
     const inputSize = document.getElementById('size');
 
-    // Default configuration
     groupPrice.style.display = 'block';
     groupSize.style.display = 'block';
     lblPrice.textContent = "PRICE (IN ₹)";
@@ -733,47 +738,47 @@
 
     if (cat === 'flatmate') {
       lblTitle.innerHTML = `HEADLINE / LOCATION <span class="req">*</span>`;
-      inputTitle.placeholder = "e.g. Need 1 male flatmate in Emerald Park";
+      inputTitle.placeholder = "e.g. Need 1 male flatmate near End Point";
       lblDesc.innerHTML = `ROOM & FLAT DETAILS <span class="req">*</span>`;
-      inputDesc.placeholder = "Mention rent per head, AC/Non-AC, food setup, house rules...";
+      inputDesc.placeholder = "Rent per head, AC/Non-AC, house rules...";
       lblPrice.textContent = "RENT / MONTH (IN ₹)";
       lblSize.textContent = "BHK CONFIG";
       inputSize.placeholder = "e.g. 2BHK, Single occupancy";
     } else if (cat === 'flat') {
-      lblTitle.innerHTML = `FLAT / PROPERTY TITLE <span class="req">*</span>`;
-      inputTitle.placeholder = "e.g. Fully furnished 3BHK near End Point";
+      lblTitle.innerHTML = `PROPERTY TITLE <span class="req">*</span>`;
+      inputTitle.placeholder = "e.g. Fully furnished 3BHK for rent";
       lblDesc.innerHTML = `PROPERTY DETAILS <span class="req">*</span>`;
-      inputDesc.placeholder = "Amenities, deposit, maintenance, availability date...";
+      inputDesc.placeholder = "Amenities, deposit, maintenance, availability...";
       lblPrice.textContent = "MONTHLY RENT (IN ₹)";
       lblSize.textContent = "APARTMENT SIZE";
       inputSize.placeholder = "e.g. 3BHK / 1400 sqft";
     } else if (cat === 'cab') {
       lblTitle.innerHTML = `ROUTE / DESTINATION <span class="req">*</span>`;
-      inputTitle.placeholder = "e.g. MIT Gate 2 to Mangalore Airport";
+      inputTitle.placeholder = "e.g. Campus to Mangalore Airport";
       lblDesc.innerHTML = `TRIP DETAILS <span class="req">*</span>`;
-      inputDesc.placeholder = "Date, exact departure time, luggage allowance...";
+      inputDesc.placeholder = "Date, departure time, luggage space...";
       lblPrice.textContent = "ESTIMATED SHARE (IN ₹)";
       lblSize.textContent = "SEATS AVAILABLE";
       inputSize.placeholder = "e.g. 2 seats left";
-    } else if (cat === 'help' || cat === 'lost') {
+    } else if (cat === 'lost') {
       lblTitle.innerHTML = `SUMMARY / ITEM <span class="req">*</span>`;
-      inputTitle.placeholder = cat === 'lost' ? "e.g. Lost Boat Earbuds near Block 5" : "e.g. Need Drafter for Engineering Graphics";
+      inputTitle.placeholder = "e.g. Lost Wireless Earbuds near Library";
       lblDesc.innerHTML = `DESCRIPTION <span class="req">*</span>`;
-      inputDesc.placeholder = "Provide clear details, time, and location...";
+      inputDesc.placeholder = "Provide details, last seen location, time...";
       groupPrice.style.display = 'none';
       groupSize.style.display = 'none';
     } else {
       lblTitle.innerHTML = `POST TITLE <span class="req">*</span>`;
       inputTitle.placeholder = "e.g. Study table for sale";
       lblDesc.innerHTML = `PRODUCT DESCRIPTION <span class="req">*</span>`;
-      inputDesc.placeholder = "Describe condition, age, reason for selling, pick-up point...";
+      inputDesc.placeholder = "Describe condition, reason for selling, location...";
     }
   }
 
   categorySelect.addEventListener('change', adaptFormToCategory);
-  adaptFormToCategory(); // Run initial setup
+  adaptFormToCategory();
 
-  // Real-time synchronization with Firebase
+  // Firestore Data Synchronization
   onSnapshot(itemsCollection, (snapshot) => {
     items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     render();
@@ -872,17 +877,18 @@
     document.getElementById('emptyState').style.display = list.length ? 'none' : 'block';
 
     grid.innerHTML = list.map(it=>{
-      const cat = CATS[it.category] || CATS.other;
+      const cat = CATS[it.category] || {label:'Other', emoji:'🗂️', color:'#888'};
       const isMine = mine.includes(it.id);
       const isFlagged = (it.reportCount||0) >= FLAG_THRESHOLD;
       const alreadyReported = reported.includes(it.id);
 
       let actions = '';
       if(it.tglink){
-        actions += `<a class="a-tg" target="_blank" href="${it.tglink}">Telegram</a>`;
+        const safeTg = sanitizeTgLink(it.tglink);
+        if(safeTg) actions += `<a class="a-tg" target="_blank" rel="noopener" href="${safeTg}">Telegram</a>`;
       }
       if(it.phone){
-        actions += `<a class="a-wa" target="_blank" href="${whatsappLink(it.phone)}">WhatsApp</a>`;
+        actions += `<a class="a-wa" target="_blank" rel="noopener" href="${whatsappLink(it.phone)}">WhatsApp</a>`;
         actions += `<a class="a-call" href="tel:${it.phone}">Call</a>`;
       }
 
@@ -894,7 +900,6 @@
         actions += `<button class="a-del" data-action="delete" data-id="${it.id}">Delete</button>`;
       }
 
-      // Render Video vs Image logic
       let mediaHtml = '';
       if (it.media && it.media.length > 0) {
         const item = it.media[0];
@@ -929,7 +934,7 @@
     }).join('');
   }
 
-  // Handle Dynamic Button Clicks inside Cards
+  // Handle Card Actions
   document.getElementById('grid').addEventListener('click', async (e) => {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
@@ -973,7 +978,7 @@
     const raw = document.getElementById('rawMsg').value.trim();
     const title = document.getElementById('title').value.trim();
     let phone = document.getElementById('phone').value.trim();
-    let tglink = document.getElementById('tglink').value.trim();
+    let rawTg = document.getElementById('tglink').value.trim();
     const category = document.getElementById('category').value;
     const priceRaw = document.getElementById('price').value.trim();
     const price = priceRaw === '' ? undefined : Number(priceRaw);
@@ -983,21 +988,8 @@
     if (!title) { toast('Please enter a title or headline'); return; }
     if (!raw) { toast('Please add a description'); return; }
 
-    // Format Telegram Username or Redirect Phone Number to WhatsApp
-    if (tglink) {
-      let cleanTg = tglink.trim().replace(/^@/, '');
-
-      if (/^\+?\d{10,15}$/.test(cleanTg.replace(/[\s-]/g, ''))) {
-        let cleanPhone = cleanTg.replace(/\D/g, '');
-        if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
-        if (!phone) phone = cleanPhone;
-        tglink = ''; 
-      } else if (!cleanTg.startsWith('http')) {
-        tglink = `https://t.me/${cleanTg}`;
-      }
-    }
-
-    if (!phone && !tglink) { toast('Please enter a Telegram handle OR a Phone number!'); return; }
+    const tglink = sanitizeTgLink(rawTg);
+    if (!phone && !tglink) { toast('Please enter a valid Telegram handle OR Phone number!'); return; }
 
     const postBtn = document.getElementById('postBtn');
     postBtn.disabled = true;
@@ -1021,14 +1013,13 @@
       resetForm();
     } catch (err) {
       console.error(err);
-      toast('Firebase Error: Could not save');
+      toast('Could not save post');
     } finally {
       postBtn.disabled = false;
       postBtn.textContent = "Pin it";
     }
   };
 
-  // Form utilities
   function resetForm(){
     document.getElementById('rawMsg').value='';
     document.getElementById('title').value='';
