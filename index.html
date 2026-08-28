@@ -372,6 +372,46 @@
     .search-input{width:100%;}
     .btn-pin, .btn-surprise{flex:1;}
   }
+
+  /* Required Field Indicator */
+  .req {
+    color: #e63946;
+    font-weight: bold;
+    margin-left: 2px;
+  }
+
+  /* Base Form Field Stacking & Spacing */
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .form-row > div {
+    flex: 1 1 100%; /* Default to full width on mobile */
+  }
+
+  /* Ensure inputs take full width */
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  /* 2 columns on desktop/tablet, 1 column on phone */
+  @media (min-width: 600px) {
+    .form-row > div {
+      flex: 1;
+    }
+  }
 </style>
 </head>
 <body>
@@ -409,72 +449,81 @@
     </select>
   </div>
 
-  <div class="panel" id="panel">
-    <h3>Pin a new post</h3>
-    <p class="hint">Paste raw Telegram text or fill out details. At least one contact method is required.</p>
-
-    <div class="field">
-      <label>Paste message</label>
-      <textarea id="rawMsg" placeholder="e.g. Selling study table, barely used, 1200rs. Contact @username or 98765xxxxx"></textarea>
-    </div>
-
-    <div class="row2">
-      <div class="field">
-        <label>Category</label>
-        <select id="category">
-          <option value="buy-sell">💰 Buy & Sell</option>
-          <option value="flatmate">🔍 Find Flatmates</option>
-          <option value="flat">🏠 Flats for Rent</option>
-          <option value="cab">🚗 Find Cab Mate</option>
-          <option value="help">🆘 Ask Help</option>
-          <option value="lost">👮 Lost & Found</option>
-          <option value="events">🎤 Free Events</option>
-          <option value="other">🗂️ Other</option>
-        </select>
+  <!-- NEW POST PANEL -->
+  <div id="panel" class="panel">
+    <div class="panel-content">
+      <h3>📌 Pin a Post</h3>
+      
+      <div class="form-group">
+        <label>DETAILS / DESCRIPTION <span class="req">*</span></label>
+        <textarea id="rawMsg" rows="3" placeholder="Paste full post or message here..."></textarea>
       </div>
-      <div class="field">
-        <label>Title (short)</label>
-        <input id="title" placeholder="e.g. Study table for sale">
-      </div>
-    </div>
 
-    <div class="row2">
-      <div class="field">
-        <label>Telegram Handle / Link</label>
-        <input id="tglink" placeholder="e.g. @username or t.me/username">
-      </div>
-      <div class="field">
-        <label>Phone / WhatsApp number</label>
-        <input id="phone" placeholder="Only if you want direct calls/WA">
-      </div>
-    </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CATEGORY <span class="req">*</span></label>
+          <select id="category">
+            <option value="buy-sell">💰 Buy & Sell</option>
+            <option value="flatmate">🔍 Find Flatmates</option>
+            <option value="flat">🏠 Flats for Rent</option>
+            <option value="cab">🚗 Find Cab Mate</option>
+            <option value="help">🆘 Ask Help</option>
+            <option value="lost">👮 Lost & Found</option>
+            <option value="events">🎤 Free Events</option>
+            <option value="other">🗂️ Other</option>
+          </select>
+        </div>
 
-    <div class="row2">
-      <div class="field">
-        <label>Price in ₹ (optional)</label>
-        <input id="price" type="number" min="0" placeholder="e.g. 1200">
+        <div class="form-group">
+          <label>TITLE <span class="req">*</span></label>
+          <input type="text" id="title" placeholder="e.g. Study table for sale">
+        </div>
       </div>
-      <div class="field">
-        <label>Size (optional)</label>
-        <input id="size" placeholder="e.g. M, UK 9, 3BHK">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>TELEGRAM HANDLE <span class="req">*</span></label>
+          <input type="text" id="tglink" placeholder="e.g. @username">
+        </div>
+
+        <div class="form-group">
+          <label>PHONE / WHATSAPP <span class="req">*</span></label>
+          <input type="text" id="phone" placeholder="e.g. 9876543210">
+        </div>
       </div>
-    </div>
 
-    <div class="field">
-      <label>Seller / dealer name (optional)</label>
-      <input id="seller" placeholder="So repeat sellers can be found by name">
-    </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>PRICE (IN ₹)</label>
+          <input type="number" id="price" placeholder="e.g. 1200">
+        </div>
 
-    <div class="field">
-      <label>Photos (optional, up to 3)</label>
-      <label class="filelabel" id="fileLabel">Tap to add images</label>
-      <input type="file" id="fileInput" accept="image/*" multiple style="display:none">
-      <div class="imgpicker" id="imgPreview"></div>
-    </div>
+        <div class="form-group">
+          <label>SIZE / VARIANT</label>
+          <input type="text" id="size" placeholder="e.g. M, UK 9, 3BHK">
+        </div>
+      </div>
 
-    <div class="panel-actions">
-      <button class="btn-ghost" id="cancelBtn">Cancel</button>
-      <button class="btn-solid" id="postBtn">Pin it</button>
+      <div class="form-group">
+        <label>SELLER / DEALER NAME</label>
+        <input type="text" id="seller" placeholder="Your name or alias">
+      </div>
+
+      <div class="form-group">
+        <label>PHOTOS (UP TO 3)</label>
+        <div id="imgDrop" class="img-drop">TAP TO ADD IMAGES</div>
+        <input type="file" id="imgInput" accept="image/*" multiple style="display:none">
+        <div id="imgPreview" class="img-preview"></div>
+      </div>
+
+      <div style="font-size: 11px; color: #777; margin-bottom: 12px;">
+        <span class="req">*</span> Fill either Telegram or Phone to enable contact buttons.
+      </div>
+
+      <div class="panel-actions">
+        <button id="cancelBtn" class="btn-ghost">Cancel</button>
+        <button id="postBtn" class="btn-solid">Pin it</button>
+      </div>
     </div>
   </div>
 
