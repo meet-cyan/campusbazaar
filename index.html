@@ -477,6 +477,20 @@
     h1{font-size:1.6rem;}
     .row2{grid-template-columns:1fr;}
   }
+  /* Mobile fix for Pin button overflow */
+@media (max-width: 600px) {
+  /* Replace these class names with your actual HTML class names if different */
+  .search-controls-container {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .pin-post-btn, 
+  .surprise-btn {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
 </style>
 </head>
 <body>
