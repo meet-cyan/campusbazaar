@@ -502,30 +502,29 @@
       <h3>📌 Pin a Post</h3>
       
       <div class="form-group">
-        <label>DETAILS / DESCRIPTION <span class="req">*</span></label>
-        <textarea id="rawMsg" rows="3" placeholder="Paste full post or message here..."></textarea>
+        <label for="category">CATEGORY <span class="req">*</span></label>
+        <select id="category">
+          <option value="buy-sell">💰 Buy & Sell</option>
+          <option value="flatmate">🔍 Find Flatmates</option>
+          <option value="flat">🏠 Flats for Rent</option>
+          <option value="cab">🚗 Find Cab Mate</option>
+          <option value="help">🆘 Ask Help</option>
+          <option value="lost">👮 Lost & Found</option>
+          <option value="events">🎤 Free Events</option>
+          <option value="other">🗂️ Other</option>
+        </select>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>CATEGORY <span class="req">*</span></label>
-          <select id="category">
-            <option value="buy-sell">💰 Buy & Sell</option>
-            <option value="flatmate">🔍 Find Flatmates</option>
-            <option value="flat">🏠 Flats for Rent</option>
-            <option value="cab">🚗 Find Cab Mate</option>
-            <option value="help">🆘 Ask Help</option>
-            <option value="lost">👮 Lost & Found</option>
-            <option value="events">🎤 Free Events</option>
-            <option value="other">🗂️ Other</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>TITLE <span class="req">*</span></label>
-          <input type="text" id="title" placeholder="e.g. Study table for sale">
-        </div>
+      <div class="form-group" id="group-title">
+        <label id="lbl-title">POST TITLE <span class="req">*</span></label>
+        <input type="text" id="title" placeholder="e.g. Study table for sale">
       </div>
+
+      <div class="form-group">
+        <label id="lbl-desc">DESCRIPTION / DETAILS <span class="req">*</span></label>
+        <textarea id="rawMsg" rows="3" placeholder="Describe condition, reason for selling, location, specs..."></textarea>
+      </div>
+
       <!-- CONTACT OPTIONS SECTION -->
       <div class="contact-section">
         <div class="contact-header">
@@ -548,32 +547,32 @@
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>PRICE (IN ₹)</label>
+      <div class="form-row" id="group-extra-row">
+        <div class="form-group" id="group-price">
+          <label id="lbl-price">PRICE (IN ₹)</label>
           <input type="number" id="price" placeholder="e.g. 1200">
         </div>
 
-        <div class="form-group">
-          <label>SIZE / VARIANT</label>
+        <div class="form-group" id="group-size">
+          <label id="lbl-size">SIZE / VARIANT</label>
           <input type="text" id="size" placeholder="e.g. M, UK 9, 3BHK">
         </div>
       </div>
 
       <div class="form-group">
-        <label>SELLER / DEALER NAME</label>
+        <label>POSTED BY / ALIAS</label>
         <input type="text" id="seller" placeholder="Your name or alias">
       </div>
 
       <div class="form-group">
-        <label>PHOTOS (UP TO 3)</label>
-        <div id="imgDrop" class="img-drop">TAP TO ADD IMAGES</div>
-        <input type="file" id="imgInput" accept="image/*" multiple style="display:none">
-        <div id="imgPreview" class="img-preview"></div>
+        <label>PHOTOS OR VIDEO (UP TO 3)</label>
+        <div id="imgDrop" class="filelabel">TAP OR DROP IMAGES / SHORT VIDEO</div>
+        <input type="file" id="imgInput" accept="image/*,video/*" multiple style="display:none">
+        <div id="mediaPreview" class="imgpicker" style="margin-top:8px;"></div>
       </div>
 
       <div style="font-size: 11px; color: #777; margin-bottom: 12px;">
-        <span class="req">*</span> Fill either Telegram or Phone to enable contact buttons.
+        <span class="req">*</span> Fill at least one contact method (Telegram OR Phone/WhatsApp).
       </div>
 
       <div class="panel-actions">
@@ -634,13 +633,13 @@
   let reported = JSON.parse(localStorage.getItem('reported_ids_v1') || '[]');
   let isAdmin = false;
   let activeCat = 'all';
-  let pendingImages = [];
+  let pendingMedia = []; // Stores Base64 media files (images or video)
 
   function toast(msg){
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'), 2000);
+    setTimeout(()=>t.classList.remove('show'), 2200);
   }
 
   function escapeHtml(s){
@@ -660,6 +659,119 @@
     if(s<86400) return Math.floor(s/3600)+'h ago';
     return Math.floor(s/86400)+'d ago';
   }
+
+  // Handle Media Picker (Images & Videos)
+  const imgDrop = document.getElementById('imgDrop');
+  const imgInput = document.getElementById('imgInput');
+  const mediaPreview = document.getElementById('mediaPreview');
+
+  imgDrop.onclick = () => imgInput.click();
+
+  imgInput.onchange = (e) => {
+    const files = Array.from(e.target.files);
+    if (pendingMedia.length + files.length > 3) {
+      toast('Maximum 3 attachments allowed');
+      return;
+    }
+
+    files.forEach(file => {
+      // Limit file size to ~6MB for Firestore Base64 encoding
+      if (file.size > 6 * 1024 * 1024) {
+        toast(`File ${file.name} exceeds 6MB size limit`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        pendingMedia.push({ data: evt.target.result, type: file.type.startsWith('video') ? 'video' : 'image' });
+        renderMediaPreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+    imgInput.value = '';
+  };
+
+  function renderMediaPreviews() {
+    mediaPreview.innerHTML = pendingMedia.map((m, idx) => {
+      if (m.type === 'video') {
+        return `<div style="position:relative;display:inline-block;">
+          <video src="${m.data}" class="thumb" muted></video>
+          <span style="position:absolute;top:2px;right:2px;background:red;color:#fff;font-size:9px;padding:2px 4px;border-radius:3px;cursor:pointer;" onclick="window.removeMedia(${idx})">✕</span>
+        </div>`;
+      }
+      return `<div style="position:relative;display:inline-block;">
+        <img src="${m.data}" class="thumb">
+        <span style="position:absolute;top:2px;right:2px;background:red;color:#fff;font-size:9px;padding:2px 4px;border-radius:3px;cursor:pointer;" onclick="window.removeMedia(${idx})">✕</span>
+      </div>`;
+    }).join('');
+  }
+
+  window.removeMedia = (index) => {
+    pendingMedia.splice(index, 1);
+    renderMediaPreviews();
+  };
+
+  // ISSUE 3 FIX: Tailor form labels and placeholders dynamically based on Category Selection
+  const categorySelect = document.getElementById('category');
+  function adaptFormToCategory() {
+    const cat = categorySelect.value;
+    const lblTitle = document.getElementById('lbl-title');
+    const inputTitle = document.getElementById('title');
+    const lblDesc = document.getElementById('lbl-desc');
+    const inputDesc = document.getElementById('rawMsg');
+    const groupPrice = document.getElementById('group-price');
+    const lblPrice = document.getElementById('lbl-price');
+    const groupSize = document.getElementById('group-size');
+    const lblSize = document.getElementById('lbl-size');
+    const inputSize = document.getElementById('size');
+
+    // Default configuration
+    groupPrice.style.display = 'block';
+    groupSize.style.display = 'block';
+    lblPrice.textContent = "PRICE (IN ₹)";
+    lblSize.textContent = "SIZE / VARIANT";
+    inputSize.placeholder = "e.g. M, UK 9, 3BHK";
+
+    if (cat === 'flatmate') {
+      lblTitle.innerHTML = `HEADLINE / LOCATION <span class="req">*</span>`;
+      inputTitle.placeholder = "e.g. Need 1 male flatmate in Emerald Park";
+      lblDesc.innerHTML = `ROOM & FLAT DETAILS <span class="req">*</span>`;
+      inputDesc.placeholder = "Mention rent per head, AC/Non-AC, food setup, house rules...";
+      lblPrice.textContent = "RENT / MONTH (IN ₹)";
+      lblSize.textContent = "BHK CONFIG";
+      inputSize.placeholder = "e.g. 2BHK, Single occupancy";
+    } else if (cat === 'flat') {
+      lblTitle.innerHTML = `FLAT / PROPERTY TITLE <span class="req">*</span>`;
+      inputTitle.placeholder = "e.g. Fully furnished 3BHK near End Point";
+      lblDesc.innerHTML = `PROPERTY DETAILS <span class="req">*</span>`;
+      inputDesc.placeholder = "Amenities, deposit, maintenance, availability date...";
+      lblPrice.textContent = "MONTHLY RENT (IN ₹)";
+      lblSize.textContent = "APARTMENT SIZE";
+      inputSize.placeholder = "e.g. 3BHK / 1400 sqft";
+    } else if (cat === 'cab') {
+      lblTitle.innerHTML = `ROUTE / DESTINATION <span class="req">*</span>`;
+      inputTitle.placeholder = "e.g. MIT Gate 2 to Mangalore Airport";
+      lblDesc.innerHTML = `TRIP DETAILS <span class="req">*</span>`;
+      inputDesc.placeholder = "Date, exact departure time, luggage allowance...";
+      lblPrice.textContent = "ESTIMATED SHARE (IN ₹)";
+      lblSize.textContent = "SEATS AVAILABLE";
+      inputSize.placeholder = "e.g. 2 seats left";
+    } else if (cat === 'help' || cat === 'lost') {
+      lblTitle.innerHTML = `SUMMARY / ITEM <span class="req">*</span>`;
+      inputTitle.placeholder = cat === 'lost' ? "e.g. Lost Boat Earbuds near Block 5" : "e.g. Need Drafter for Engineering Graphics";
+      lblDesc.innerHTML = `DESCRIPTION <span class="req">*</span>`;
+      inputDesc.placeholder = "Provide clear details, time, and location...";
+      groupPrice.style.display = 'none';
+      groupSize.style.display = 'none';
+    } else {
+      lblTitle.innerHTML = `POST TITLE <span class="req">*</span>`;
+      inputTitle.placeholder = "e.g. Study table for sale";
+      lblDesc.innerHTML = `PRODUCT DESCRIPTION <span class="req">*</span>`;
+      inputDesc.placeholder = "Describe condition, age, reason for selling, pick-up point...";
+    }
+  }
+
+  categorySelect.addEventListener('change', adaptFormToCategory);
+  adaptFormToCategory(); // Run initial setup
 
   // Real-time synchronization with Firebase
   onSnapshot(itemsCollection, (snapshot) => {
@@ -781,7 +893,20 @@
       if(isMine || isAdmin){
         actions += `<button class="a-del" data-action="delete" data-id="${it.id}">Delete</button>`;
       }
-      const img = (it.images && it.images[0]) ? `<img class="attach" src="${it.images[0]}">` : '';
+
+      // Render Video vs Image logic
+      let mediaHtml = '';
+      if (it.media && it.media.length > 0) {
+        const item = it.media[0];
+        if (item.type === 'video') {
+          mediaHtml = `<video class="attach" controls src="${item.data}"></video>`;
+        } else {
+          mediaHtml = `<img class="attach" src="${item.data}">`;
+        }
+      } else if (it.images && it.images[0]) {
+        mediaHtml = `<img class="attach" src="${it.images[0]}">`;
+      }
+
       const flagBadge = isFlagged ? `<span class="flag-badge">⚠️ ${it.reportCount} reports</span>` : '';
       const featuredBadge = it.featured ? `<span class="featured-badge">★ Featured</span>` : '';
 
@@ -796,7 +921,7 @@
         <span class="tape" style="background:${cat.color}">${cat.emoji} ${cat.label}</span>
         <h4>${escapeHtml(it.title)}</h4>
         ${tagRow}
-        ${img}
+        ${mediaHtml}
         <p class="desc">${escapeHtml(it.desc)}</p>
         <div class="meta"><span>${timeAgo(it.ts)}</span><span>${it.phone ? '📞 '+it.phone : (it.tglink ? '✈️ Telegram' : '')}</span></div>
         <div class="actions">${actions}</div>
@@ -817,7 +942,7 @@
         await deleteDoc(doc(db, "items", id));
         mine = mine.filter(m => m !== id);
         localStorage.setItem('my_posted_ids_v1', JSON.stringify(mine));
-        toast('Removed from Database');
+        toast('Removed from board');
       } catch (err) {
         toast('Failed to delete item');
       }
@@ -846,7 +971,7 @@
   // Pin Post to Firestore
   document.getElementById('postBtn').onclick = async () => {
     const raw = document.getElementById('rawMsg').value.trim();
-    const title = document.getElementById('title').value.trim() || raw.split('\n')[0].slice(0,60) || 'Untitled post';
+    const title = document.getElementById('title').value.trim();
     let phone = document.getElementById('phone').value.trim();
     let tglink = document.getElementById('tglink').value.trim();
     const category = document.getElementById('category').value;
@@ -855,7 +980,8 @@
     const size = document.getElementById('size').value.trim();
     const seller = document.getElementById('seller').value.trim();
 
-    if (!raw && !title) { toast('Paste a message or add a title first'); return; }
+    if (!title) { toast('Please enter a title or headline'); return; }
+    if (!raw) { toast('Please add a description'); return; }
 
     // Format Telegram Username or Redirect Phone Number to WhatsApp
     if (tglink) {
@@ -881,7 +1007,7 @@
       category, title, desc: raw, phone, tglink, size, seller,
       featured: false,
       reportCount: 0,
-      images: pendingImages.slice(),
+      media: pendingMedia.slice(),
       ts: Date.now()
     };
     if (price !== undefined) payload.price = price;
@@ -911,8 +1037,8 @@
     document.getElementById('price').value='';
     document.getElementById('size').value='';
     document.getElementById('seller').value='';
-    pendingImages = [];
-    document.getElementById('imgPreview').innerHTML = '';
+    pendingMedia = [];
+    document.getElementById('mediaPreview').innerHTML = '';
   }
 
   document.getElementById('toggleBtn').onclick = () => document.getElementById('panel').classList.add('open');
