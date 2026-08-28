@@ -755,29 +755,30 @@ function timeAgo(ts){
   return Math.floor(s/86400)+'d ago';
 }
 
+/* FIXED STORAGE FUNCTIONS (USES LOCALSTORAGE NOW) */
 async function loadItems(){
   try{
-    const res = await window.storage.get(STORAGE_KEY, true);
-    items = res ? JSON.parse(res.value) : [];
+    const res = localStorage.getItem(STORAGE_KEY);
+    items = res ? JSON.parse(res) : [];
   }catch(e){ items = []; }
   try{
-    const res2 = await window.storage.get(MINE_KEY, false);
-    mine = res2 ? JSON.parse(res2.value) : [];
+    const res2 = localStorage.getItem(MINE_KEY);
+    mine = res2 ? JSON.parse(res2) : [];
   }catch(e){ mine = []; }
   try{
-    const res3 = await window.storage.get(REPORTED_KEY, false);
-    reported = res3 ? JSON.parse(res3.value) : [];
+    const res3 = localStorage.getItem(REPORTED_KEY);
+    reported = res3 ? JSON.parse(res3) : [];
   }catch(e){ reported = []; }
   render();
 }
 async function saveItems(){
-  await window.storage.set(STORAGE_KEY, JSON.stringify(items), true);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 async function saveMine(){
-  await window.storage.set(MINE_KEY, JSON.stringify(mine), false);
+  localStorage.setItem(MINE_KEY, JSON.stringify(mine));
 }
 async function saveReported(){
-  await window.storage.set(REPORTED_KEY, JSON.stringify(reported), false);
+  localStorage.setItem(REPORTED_KEY, JSON.stringify(reported));
 }
 
 function buildTabs(){
@@ -912,6 +913,7 @@ function render(){
     if(isAdmin){
       actions += `<button class="a-feature ${it.featured?'on':''}" onclick="toggleFeatured(${it.id})">${it.featured?'★ Featured':'☆ Feature'}</button>`;
     }
+    /* ONLY SHOW DELETE BUTTON IF ADMIN MODE IS ON OR POSTED BY THIS DEVICE */
     if(isMine || isAdmin){
       actions += `<button class="a-del" onclick="deleteItem(${it.id})">Delete</button>`;
     }
