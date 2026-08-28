@@ -594,6 +594,7 @@
 <div class="toast" id="toast"></div>
 
 <!-- Firebase Module & App Logic -->
+<!-- Replace the script tag section in your file with this -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
@@ -870,7 +871,7 @@
       }
     }
 
-    if (!phone && !tglink) { toast('Provide either a Telegram handle or Phone number'); return; }
+    if (!phone && !tglink) { toast('Please enter a Telegram handle OR a Phone number!'); return; }
 
     const postBtn = document.getElementById('postBtn');
     postBtn.disabled = true;
@@ -943,12 +944,6 @@
   document.getElementById('sortSel').addEventListener('change', render);
   document.getElementById('dealerSel').addEventListener('change', render);
   document.getElementById('sizeSel').addEventListener('change', render);
-      // Check if AT LEAST ONE contact option is provided
-    if (!phone && !tglink) { 
-      toast('Please enter a Telegram handle OR a Phone number!'); 
-      return; 
-    }
-
 </script>
 </body>
 </html>
