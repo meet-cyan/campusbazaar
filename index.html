@@ -57,28 +57,60 @@
     width: 100%;
     max-width: 100%;
     position: relative;
-    margin-top: 0;
+    margin-top: 16px;
     margin-bottom: 24px;
-    height: 360px;
+    height: 340px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    background: #020617;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0f172a 100%);
+    border: 1px solid var(--line);
     border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Fallback text / graphic inside container if image is missing */
+  .hero-fallback-content {
+    position: absolute;
+    text-align: center;
+    padding: 20px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .hero-fallback-content span {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 8px;
+    animation: bounceIcon 2s infinite ease-in-out;
+  }
+  .hero-fallback-content h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    color: #c7d2fe;
+    margin: 0 0 4px;
+  }
+  .hero-fallback-content p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0;
+  }
+  @keyframes bounceIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
   
   .hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+    z-index: 2;
     filter: contrast(1.15) saturate(1.2) brightness(0.95);
-    animation: zoomHero 12s infinite alternate ease-in-out;
-    transition: filter 0.5s ease;
-  }
-  
-  @keyframes zoomHero {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.08); }
+    transition: opacity 0.5s ease;
   }
 
   .hero-image-container::after {
@@ -87,8 +119,9 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 120px;
+    height: 100px;
     background: linear-gradient(to top, var(--bg), transparent);
+    z-index: 3;
     pointer-events: none;
   }
 
@@ -492,7 +525,7 @@
     .toolbar{flex-wrap:wrap;}
     .search-input{width:100%;}
     .btn-pin, .btn-surprise{flex:1;}
-    .hero-image-container { height: 240px; }
+    .hero-image-container { height: 220px; }
   }
 
   .req { color: #e11d48; font-weight: bold; margin-left: 2px; }
@@ -526,8 +559,14 @@
 <body>
 
 <div class="wrap">
+  <!-- Hero Section with Fallback Graphic & Image Support -->
   <div class="hero-image-container">
-    <img src="1000091163.jpg" alt="Student Plaza MIT Manipal" class="hero-image" onerror="this.style.display='none';">
+    <div class="hero-fallback-content">
+      <span>🏛️</span>
+      <h3>Manipal Campus Hub</h3>
+      <p>Student Plaza · End Point · Classrooms</p>
+    </div>
+    <img src="1000091163.jpg" alt="Student Plaza MIT Manipal" class="hero-image" onerror="this.style.opacity='0';">
   </div>
 
   <header>
@@ -573,6 +612,7 @@
     </select>
   </div>
 
+  <!-- NEW POST PANEL -->
   <div id="panel" class="panel">
     <div class="panel-content">
       <h3>📌 Pin a Post</h3>
@@ -666,6 +706,7 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Firebase Logic with Expanded Time Filter Support -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
