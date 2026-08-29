@@ -54,18 +54,16 @@
   }
   
   .hero-image-container {
-    width: 100vw;
+    width: 100%;
+    max-width: 100%;
     position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
     margin-top: 0;
     margin-bottom: 24px;
     height: 360px;
     overflow: hidden;
     box-shadow: 0 15px 35px rgba(0,0,0,0.4);
     background: #020617;
+    border-radius: var(--radius);
   }
   
   .hero-image {
@@ -527,12 +525,11 @@
 </head>
 <body>
 
-  <!-- Enhanced Photo attached as requested -->
+<div class="wrap">
   <div class="hero-image-container">
-    <img src="1000091163.jpg" alt="Student Plaza MIT Manipal" class="hero-image">
+    <img src="1000091163.jpg" alt="Student Plaza MIT Manipal" class="hero-image" onerror="this.style.display='none';">
   </div>
 
-<div class="wrap">
   <header>
     <span class="pin">📌</span>
     <span class="kicker">est. because group chats forget</span>
@@ -565,7 +562,6 @@
       <option value="under2000">Price: Under ₹2000</option>
     </select>
 
-    <!-- Expanded time filtering options -->
     <select id="timeSel">
       <option value="all">Time: Anytime</option>
       <option value="6h">Time: Last 6 hours</option>
@@ -577,7 +573,6 @@
     </select>
   </div>
 
-  <!-- NEW POST PANEL -->
   <div id="panel" class="panel">
     <div class="panel-content">
       <h3>📌 Pin a Post</h3>
@@ -671,7 +666,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase Logic with Expanded Time Filter Support -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
@@ -910,7 +904,6 @@
     if (priceFilter === 'under500') list = list.filter(i => i.price !== undefined && i.price <= 500);
     if (priceFilter === 'under2000') list = list.filter(i => i.price !== undefined && i.price <= 2000);
 
-    // Enhanced time filtering logic
     if (timeFilter === '6h') list = list.filter(i => (now - i.ts) <= 21600000);
     else if (timeFilter === '24h') list = list.filter(i => (now - i.ts) <= 86400000);
     else if (timeFilter === '3d') list = list.filter(i => (now - i.ts) <= 259200000);
