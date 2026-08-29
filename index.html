@@ -53,7 +53,6 @@
     margin-bottom:20px;
   }
   
-  /* Full-bleed hero banner covering entire top width with no gaps and animations */
   .hero-image-container {
     width: 100vw;
     position: relative;
@@ -66,6 +65,7 @@
     height: 320px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    background: #0f172a;
   }
   
   .hero-image {
@@ -262,7 +262,6 @@
   @keyframes panelOpen{from{opacity:0;transform:translateY(-15px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
   
   .panel h3{font-family:'Poppins', sans-serif;margin:0 0 20px;font-size:1.4rem;}
-  .field{margin-bottom:12px;}
   .form-group label{
     display:block;
     font-family:'Inter', sans-serif;
@@ -525,9 +524,9 @@
 </head>
 <body>
 
-  <!-- Fixed Hero Banner with Working Reliable Campus Image -->
+  <!-- Hero Banner using your exact photo link -->
   <div class="hero-image-container">
-    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80" alt="Student Plaza MIT Manipal" class="hero-image">
+    <img src="https://share.google/Zx1ut1X7TXDEzytGm" alt="Student Plaza MIT Manipal" class="hero-image">
   </div>
 
 <div class="wrap">
@@ -664,7 +663,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase Logic -->
+<!-- Firebase Logic with Fixed Telegram Redirection -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
@@ -713,7 +712,7 @@
     return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  // Fixed and robust Telegram sanitizer supporting full URLs, t.me links, and handles
+  // Bulletproof Telegram link sanitizer and resolver
   function sanitizeTgLink(input) {
     if (!input) return '';
     let val = input.trim();
@@ -933,9 +932,9 @@
       const isWishlisted = wishlist.includes(it.id);
 
       let actions = '';
-      if(it.tglink) actions += `<a class="a-tg" target="_blank" href="${it.tglink}">Telegram</a>`;
+      if(it.tglink) actions += `<a class="a-tg" href="${it.tglink}" target="_blank" rel="noopener noreferrer">Telegram</a>`;
       if(it.phone){
-        actions += `<a class="a-wa" target="_blank" href="${whatsappLink(it.phone)}">WhatsApp</a>`;
+        actions += `<a class="a-wa" target="_blank" rel="noopener noreferrer" href="${whatsappLink(it.phone)}">WhatsApp</a>`;
         actions += `<a class="a-call" href="tel:${it.phone}">Call</a>`;
       }
       if(isMine || isAdmin) actions += `<button class="a-del" data-action="delete" data-id="${it.id}">Delete</button>`;
