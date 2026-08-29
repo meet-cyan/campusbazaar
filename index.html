@@ -70,7 +70,6 @@
     justify-content: center;
   }
 
-  /* Fallback text / graphic inside container if image is missing */
   .hero-fallback-content {
     position: absolute;
     text-align: center;
@@ -402,10 +401,15 @@
   }
   .card:hover .tape { transform: translateX(3px); }
   
-  .save-btn-top {
+  .card-top-buttons {
     position: absolute;
     top: 10px;
     right: 12px;
+    display: flex;
+    gap: 6px;
+  }
+  
+  .icon-btn-top {
     background: var(--paper-2);
     border: 1px solid var(--line);
     border-radius: 50%;
@@ -415,15 +419,17 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--ink-soft);
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     padding: 0;
     line-height: 1;
   }
-  .save-btn-top:hover { transform: scale(1.15) rotate(10deg); color: #f43f5e; }
-  .save-btn-top.active { color: #f43f5e; border-color: #f43f5e; background: #4c0519; transform: scale(1.05); }
+  .icon-btn-top:hover { transform: scale(1.15); color: var(--ink); }
+  .icon-btn-top.save-btn.active { color: #f43f5e; border-color: #f43f5e; background: #4c0519; }
+  .icon-btn-top.report-btn:hover { color: #f59e0b; border-color: #f59e0b; background: #451a03; }
+  .icon-btn-top.report-btn.reported { color: #f59e0b; border-color: #f59e0b; background: #451a03; }
 
   .card h4{
     font-family:'Poppins', sans-serif;
@@ -513,6 +519,41 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
+  /* Modal Dialog for Report Confirmation */
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .modal-box {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 90%; max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    transform: scale(0.95);
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .modal-overlay.open .modal-box { transform: scale(1); }
+  .modal-box h3 { font-family: 'Poppins', sans-serif; margin: 0 0 10px; font-size: 1.2rem; color: #f59e0b; }
+  .modal-box p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 20px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-modal-cancel {
+    background: transparent; border: 1px solid var(--line); color: var(--ink-soft);
+    padding: 10px 16px; border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.85rem;
+  }
+  .btn-modal-confirm {
+    background: #d97706; border: none; color: #fff;
+    padding: 10px 18px; border-radius: 8px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+  }
+
   .admin-bar{text-align:center;padding:40px 0 20px;}
   .admin-link{
     font-family:'Inter', sans-serif; font-size:0.75rem; color:#64748b;
@@ -559,7 +600,6 @@
 <body>
 
 <div class="wrap">
-  <!-- Hero Section with Fallback Graphic & Image Support -->
   <div class="hero-image-container">
     <div class="hero-fallback-content">
       <span>🏛️</span>
@@ -612,7 +652,6 @@
     </select>
   </div>
 
-  <!-- NEW POST PANEL -->
   <div id="panel" class="panel">
     <div class="panel-content">
       <h3>📌 Pin a Post</h3>
@@ -704,9 +743,19 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="reportModal">
+  <div class="modal-box">
+    <h3>⚠️ Report this post?</h3>
+    <p>Are you sure you want to report this post? This alerts moderators to review the listing for spam or policy violations.</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" id="modalCancelBtn">Cancel</button>
+      <button class="btn-modal-confirm" id="modalConfirmBtn">Yes, Report</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<!-- Firebase Logic with Expanded Time Filter Support -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
@@ -743,6 +792,7 @@
   let isAdmin = false;
   let activeCat = 'all';
   let pendingMedia = [];
+  let selectedReportId = null;
 
   function toast(msg){
     const t = document.getElementById('toast');
@@ -974,6 +1024,7 @@
       const cat = CATS[it.category] || {label:'Other', emoji:'🗂️', color:'#64748b'};
       const isMine = mine.includes(it.id);
       const isWishlisted = wishlist.includes(it.id);
+      const isReported = reported.includes(it.id);
 
       let actions = '';
       if(it.tglink) actions += `<a class="a-tg" href="${it.tglink}" target="_blank" rel="noopener noreferrer">Telegram</a>`;
@@ -1000,9 +1051,14 @@
       return `<div class="card" id="card-${it.id}" style="animation-delay: ${animDelay}s;">
         <span class="tape" style="background:${cat.color}">${cat.emoji} ${cat.label}</span>
         
-        <button class="save-btn-top ${isWishlisted ? 'active' : ''}" data-action="wishlist" data-id="${it.id}">
-          ${isWishlisted ? '❤️' : '🤍'}
-        </button>
+        <div class="card-top-buttons">
+          <button class="icon-btn-top save-btn ${isWishlisted ? 'active' : ''}" data-action="wishlist" data-id="${it.id}" title="${isWishlisted ? 'Remove from saved' : 'Save post'}">
+            ${isWishlisted ? '❤️' : '🤍'}
+          </button>
+          <button class="icon-btn-top report-btn ${isReported ? 'reported' : ''}" data-action="report" data-id="${it.id}" title="Report post">
+            🚩
+          </button>
+        </div>
         
         <h4>${escapeHtml(it.title)}</h4>
         ${tagRow}
@@ -1031,6 +1087,14 @@
       localStorage.setItem('wishlist_v1', JSON.stringify(wishlist));
       render();
     } 
+    else if (action === 'report') {
+      if (reported.includes(id)) {
+        toast('You have already reported this post.');
+        return;
+      }
+      selectedReportId = id;
+      document.getElementById('reportModal').classList.add('open');
+    }
     else if (action === 'delete') {
       if (!confirm('Remove this post permanently?')) return;
       try {
@@ -1041,6 +1105,23 @@
       } catch (err) { toast('Failed to delete item'); }
     }
   });
+
+  // Modal Handlers
+  document.getElementById('modalCancelBtn').onclick = () => {
+    document.getElementById('reportModal').classList.remove('open');
+    selectedReportId = null;
+  };
+
+  document.getElementById('modalConfirmBtn').onclick = () => {
+    if (selectedReportId && !reported.includes(selectedReportId)) {
+      reported.push(selectedReportId);
+      localStorage.setItem('reported_ids_v1', JSON.stringify(reported));
+      toast('🚩 Post reported. Thank you!');
+    }
+    document.getElementById('reportModal').classList.remove('open');
+    selectedReportId = null;
+    render();
+  };
 
   document.getElementById('postBtn').onclick = async () => {
     const raw = document.getElementById('rawMsg').value.trim();
