@@ -353,7 +353,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
   
-  /* Category Tag on Top Left */
   .tape{
     position:absolute;
     top:12px;
@@ -370,7 +369,6 @@
   }
   .card:hover .tape { transform: translateX(3px); }
   
-  /* Save Icon on Top Right */
   .save-btn-top {
     position: absolute;
     top: 10px;
@@ -527,9 +525,9 @@
 </head>
 <body>
 
-  <!-- Full-Bleed Edge-to-Edge Hero Banner with Zoom Animation -->
+  <!-- Fixed Hero Banner with Working Reliable Campus Image -->
   <div class="hero-image-container">
-    <img src="https://encrypted-tbn0.licensed-image?q=tbn:ANd9GcS96T9ry1wF3b7Nz1CQ-0zaEMgAa6KZKGOqA_JmhwScoIaKWezvXYhBZGkaIv_VvCHZ5o4Ii0dcIyI6w6E" alt="Student Plaza MIT Manipal" class="hero-image">
+    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80" alt="Student Plaza MIT Manipal" class="hero-image">
   </div>
 
 <div class="wrap">
@@ -608,8 +606,8 @@
         </div>
         <div class="form-row contact-row">
           <div class="form-group">
-            <label for="tglink">TELEGRAM HANDLE</label>
-            <input type="text" id="tglink" placeholder="e.g. @username">
+            <label for="tglink">TELEGRAM HANDLE OR LINK</label>
+            <input type="text" id="tglink" placeholder="e.g. @username or t.me/username">
           </div>
           <div class="contact-divider">OR</div>
           <div class="form-group">
@@ -715,11 +713,16 @@
     return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
+  // Fixed and robust Telegram sanitizer supporting full URLs, t.me links, and handles
   function sanitizeTgLink(input) {
     if (!input) return '';
-    let clean = input.trim().replace(/^@/, '');
-    if (/^\+?\d{10,15}$/.test(clean.replace(/[\s-]/g, ''))) return '';
-    clean = clean.replace(/[^a-zA-Z0-9_.]/g, '');
+    let val = input.trim();
+    if (val.includes('t.me/')) {
+      let parts = val.split('t.me/');
+      let username = parts[parts.length - 1].split('/')[0].split('?')[0];
+      return username ? `https://t.me/${username}` : '';
+    }
+    let clean = val.replace(/^@/, '').replace(/[^a-zA-Z0-9_.]/g, '');
     return clean ? `https://t.me/${clean}` : '';
   }
 
@@ -930,7 +933,7 @@
       const isWishlisted = wishlist.includes(it.id);
 
       let actions = '';
-      if(it.tglink) actions += `<a class="a-tg" target="_blank" href="${sanitizeTgLink(it.tglink)}">Telegram</a>`;
+      if(it.tglink) actions += `<a class="a-tg" target="_blank" href="${it.tglink}">Telegram</a>`;
       if(it.phone){
         actions += `<a class="a-wa" target="_blank" href="${whatsappLink(it.phone)}">WhatsApp</a>`;
         actions += `<a class="a-call" href="tel:${it.phone}">Call</a>`;
