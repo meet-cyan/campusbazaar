@@ -8,25 +8,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #f4f7f9;
-    --bg-2: #ffffff;
-    --paper: #ffffff;
-    --paper-2: #f8fafc;
-    --ink: #1e293b;
-    --ink-soft: #64748b;
-    --line: #e2e8f0;
-    --primary: #4f46e5;
+    --bg: #0f172a;
+    --bg-2: #1e293b;
+    --paper: #1e293b;
+    --paper-2: #0f172a;
+    --ink: #f8fafc;
+    --ink-soft: #94a3b8;
+    --line: #334155;
+    --primary: #6366f1;
     --primary-ink: #ffffff;
-    --primary-hover: #4338ca;
+    --primary-hover: #4f46e5;
     
     --c-buy: #ea580c;
     --c-flatmate: #059669;
     --c-flat: #0284c7;
     --c-cab: #e11d48;
     --c-help: #7c3aed;
-    --c-lost: #475569;
+    --c-lost: #64748b;
     --c-events: #db2777;
-    --c-other: #94a3b8;
+    --c-other: #64748b;
     --radius: 12px;
   }
   *{box-sizing:border-box;}
@@ -49,7 +49,7 @@
   header{
     padding:0 0 20px;
     text-align:center;
-    border-bottom:2px dashed #cbd5e1;
+    border-bottom:2px dashed var(--line);
     margin-bottom:20px;
   }
   
@@ -62,10 +62,10 @@
     margin-right: -50vw;
     margin-top: 0;
     margin-bottom: 24px;
-    height: 320px;
+    height: 360px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-    background: #0f172a;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    background: #020617;
   }
   
   .hero-image {
@@ -73,6 +73,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    filter: contrast(1.15) saturate(1.2) brightness(0.95);
     animation: zoomHero 12s infinite alternate ease-in-out;
     transition: filter 0.5s ease;
   }
@@ -88,8 +89,8 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 100px;
-    background: linear-gradient(to top, rgba(30,41,59,0.5), transparent);
+    height: 120px;
+    background: linear-gradient(to top, var(--bg), transparent);
     pointer-events: none;
   }
 
@@ -108,7 +109,7 @@
     font-weight: 600;
     letter-spacing:0.12em;
     text-transform:uppercase;
-    color: var(--primary);
+    color: #818cf8;
     margin-bottom:6px;
   }
   h1{
@@ -130,7 +131,7 @@
     font-family:'Inter', sans-serif;
     font-weight: 500;
     font-size:0.75rem;
-    color: #64748b;
+    color: #94a3b8;
     margin-top:14px;
     letter-spacing:0.03em;
   }
@@ -158,10 +159,11 @@
     cursor:pointer;
     white-space:nowrap;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
   .tab:hover {
-    background: #f1f5f9;
+    background: #334155;
+    color: var(--ink);
     transform: translateY(-2px);
   }
   .tab.active{
@@ -169,7 +171,7 @@
     color:var(--primary-ink);
     border-color:var(--primary);
     font-weight:600;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     transform: translateY(-2px);
   }
 
@@ -183,15 +185,15 @@
     border-radius:var(--radius);
     font-family:'Inter', sans-serif;
     font-size:0.95rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     transition: all 0.25s ease;
   }
   .search-input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
   }
-  .search-input::placeholder{color:#94a3b8;}
+  .search-input::placeholder{color:#64748b;}
   .btn-pin{
     background:var(--primary);
     color:var(--primary-ink);
@@ -204,14 +206,14 @@
     cursor:pointer;
     white-space:nowrap;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
   }
   .btn-pin:active { transform: scale(0.97); }
-  .btn-pin:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.35); }
+  .btn-pin:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4); }
 
   .btn-surprise{
     background:var(--bg-2);
-    color:var(--primary);
+    color:#818cf8;
     border:1px solid var(--primary);
     padding:12px 16px;
     border-radius:var(--radius);
@@ -222,7 +224,7 @@
     white-space:nowrap;
     transition: all 0.25s ease;
   }
-  .btn-surprise:hover { background: #eef2ff; transform: translateY(-2px); }
+  .btn-surprise:hover { background: #312e81; transform: translateY(-2px); }
 
   .filter-bar{
     display:flex;
@@ -253,7 +255,7 @@
     border-radius:var(--radius);
     padding:24px;
     margin-bottom:24px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     border: 1px solid var(--line);
     display:none;
     animation: panelOpen 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -286,8 +288,8 @@
   textarea:focus, .form-group input:focus, .form-group select:focus {
     outline: none;
     border-color: var(--primary);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    background: #0f172a;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
   }
   textarea{min-height:90px;resize:vertical;}
   .imgpicker{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
@@ -307,8 +309,8 @@
   }
   .filelabel:hover {
     border-color: var(--primary);
-    background: #eef2ff;
-    color: var(--primary);
+    background: #312e81;
+    color: #818cf8;
   }
   .panel-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
   .btn-ghost{
@@ -316,14 +318,14 @@
     padding:12px 18px;border-radius:8px;cursor:pointer;font-size:0.9rem; font-weight:600; font-family:'Poppins', sans-serif;
     transition: background 0.2s;
   }
-  .btn-ghost:hover { background: #f1f5f9; }
+  .btn-ghost:hover { background: #334155; color: var(--ink); }
   .btn-solid{
-    background:var(--ink);color:var(--paper);border:none;
+    background:var(--ink);color:var(--bg);border:none;
     padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.9rem; font-family:'Poppins', sans-serif;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     transition: background 0.2s, transform 0.1s;
   }
-  .btn-solid:hover { background: #000; transform: translateY(-1px); }
+  .btn-solid:hover { background: #ffffff; transform: translateY(-1px); }
 
   .grid{
     display:grid;
@@ -337,14 +339,15 @@
     border-radius:var(--radius);
     padding: 48px 18px 18px;
     position:relative;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     border: 1px solid var(--line);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
     animation: cardAppear 0.5s ease-out backwards;
   }
   .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 16px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.5);
+    border-color: #475569;
   }
   
   @keyframes cardAppear {
@@ -363,7 +366,7 @@
     color:#fff;
     padding:4px 12px;
     border-radius:0 12px 12px 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     transition: transform 0.2s ease;
   }
   .card:hover .tape { transform: translateX(3px); }
@@ -384,12 +387,12 @@
     font-size: 1rem;
     color: var(--ink-soft);
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     padding: 0;
     line-height: 1;
   }
   .save-btn-top:hover { transform: scale(1.15) rotate(10deg); color: #f43f5e; }
-  .save-btn-top.active { color: #f43f5e; border-color: #f43f5e; background: #fff1f2; transform: scale(1.05); }
+  .save-btn-top.active { color: #f43f5e; border-color: #f43f5e; background: #4c0519; transform: scale(1.05); }
 
   .card h4{
     font-family:'Poppins', sans-serif;
@@ -403,7 +406,7 @@
     margin:12px 0;
     max-height:180px;
     object-fit:cover;
-    background: #f8fafc;
+    background: #0f172a;
     transition: transform 0.3s ease;
   }
   .card:hover img.attach { transform: scale(1.02); }
@@ -443,7 +446,7 @@
   .actions a:hover, .actions button:hover { opacity: 0.9; transform: translateY(-1px); }
   .a-tg{background:#2AABEE;color:#fff;}
   .a-wa{background:#10b981;color:#fff;}
-  .a-call{background:var(--ink);color:var(--paper);}
+  .a-call{background:#334155;color:#fff;}
   .a-del{background:transparent;border:1px solid #e11d48!important;color:#e11d48;}
   
   .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
@@ -457,23 +460,23 @@
     padding:4px 10px;
     border-radius:12px;
   }
-  .tag.price{color:var(--primary); border-color:var(--primary); background: #eef2ff; font-weight:700; font-size: 0.75rem;}
-  .tag.seller{color:#0284c7;border-color:#0284c7; background: #f0f9ff;}
+  .tag.price{color:#818cf8; border-color:#6366f1; background: #312e81; font-weight:700; font-size: 0.75rem;}
+  .tag.seller{color:#38bdf8;border-color:#0284c7; background: #082f49;}
 
   .empty{
     text-align:center;
     padding:80px 20px;
-    color:#94a3b8;
+    color:#64748b;
     font-family:'Inter', sans-serif;
     font-size:1rem;
     font-weight: 500;
   }
   .toast{
     position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
-    background:var(--ink);color:#fff;
+    background:#0f172a;color:#f8fafc; border: 1px solid var(--line);
     padding:12px 24px;border-radius:30px;font-size:0.9rem;font-weight:600;
     font-family: 'Poppins', sans-serif;
-    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    box-shadow:0 10px 25px rgba(0,0,0,0.5);
     opacity:0;pointer-events:none;transition:all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 1000;
   }
@@ -481,7 +484,7 @@
 
   .admin-bar{text-align:center;padding:40px 0 20px;}
   .admin-link{
-    font-family:'Inter', sans-serif; font-size:0.75rem; color:#94a3b8;
+    font-family:'Inter', sans-serif; font-size:0.75rem; color:#64748b;
     background:none;border:none;cursor:pointer;text-decoration:underline;
     transition: color 0.2s;
   }
@@ -491,7 +494,7 @@
     .toolbar{flex-wrap:wrap;}
     .search-input{width:100%;}
     .btn-pin, .btn-surprise{flex:1;}
-    .hero-image-container { height: 220px; }
+    .hero-image-container { height: 240px; }
   }
 
   .req { color: #e11d48; font-weight: bold; margin-left: 2px; }
@@ -524,9 +527,9 @@
 </head>
 <body>
 
-  <!-- Hero Banner using your exact photo link -->
+  <!-- Enhanced Photo attached as requested -->
   <div class="hero-image-container">
-    <img src="https://share.google/Zx1ut1X7TXDEzytGm" alt="Student Plaza MIT Manipal" class="hero-image">
+    <img src="1000091163.jpg" alt="Student Plaza MIT Manipal" class="hero-image">
   </div>
 
 <div class="wrap">
@@ -562,10 +565,15 @@
       <option value="under2000">Price: Under ₹2000</option>
     </select>
 
+    <!-- Expanded time filtering options -->
     <select id="timeSel">
       <option value="all">Time: Anytime</option>
+      <option value="6h">Time: Last 6 hours</option>
       <option value="24h">Time: Last 24 hours</option>
+      <option value="3d">Time: Last 3 days</option>
       <option value="7d">Time: Last 7 days</option>
+      <option value="30d">Time: Last 30 days</option>
+      <option value="older">Time: Older than 30 days</option>
     </select>
   </div>
 
@@ -641,7 +649,7 @@
         <div id="mediaPreview" class="imgpicker" style="margin-top:12px;"></div>
       </div>
 
-      <div style="font-size: 11px; color: #64748b; margin-bottom: 12px;">
+      <div style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">
         <span class="req">*</span> Fill at least one contact method. <br>
         <span class="req">*</span> <strong>Buy & Sell</strong> requires at least 1 image.
       </div>
@@ -663,7 +671,7 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase Logic with Fixed Telegram Redirection -->
+<!-- Firebase Logic with Expanded Time Filter Support -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
@@ -712,7 +720,6 @@
     return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  // Bulletproof Telegram link sanitizer and resolver
   function sanitizeTgLink(input) {
     if (!input) return '';
     let val = input.trim();
@@ -739,7 +746,6 @@
     return Math.floor(s/86400)+'d ago';
   }
 
-  // Media Picker
   const imgDrop = document.getElementById('imgDrop');
   const imgInput = document.getElementById('imgInput');
   const mediaPreview = document.getElementById('mediaPreview');
@@ -778,7 +784,6 @@
   }
   window.removeMedia = (index) => { pendingMedia.splice(index, 1); renderMediaPreviews(); };
 
-  // Dynamic Categories UI
   const categorySelect = document.getElementById('category');
   function adaptFormToCategory() {
     const cat = categorySelect.value;
@@ -905,8 +910,13 @@
     if (priceFilter === 'under500') list = list.filter(i => i.price !== undefined && i.price <= 500);
     if (priceFilter === 'under2000') list = list.filter(i => i.price !== undefined && i.price <= 2000);
 
-    if (timeFilter === '24h') list = list.filter(i => (now - i.ts) <= 86400000);
-    if (timeFilter === '7d') list = list.filter(i => (now - i.ts) <= 604800000);
+    // Enhanced time filtering logic
+    if (timeFilter === '6h') list = list.filter(i => (now - i.ts) <= 21600000);
+    else if (timeFilter === '24h') list = list.filter(i => (now - i.ts) <= 86400000);
+    else if (timeFilter === '3d') list = list.filter(i => (now - i.ts) <= 259200000);
+    else if (timeFilter === '7d') list = list.filter(i => (now - i.ts) <= 604800000);
+    else if (timeFilter === '30d') list = list.filter(i => (now - i.ts) <= 2592000000);
+    else if (timeFilter === 'older') list = list.filter(i => (now - i.ts) > 2592000000);
 
     if (sortBy === 'featured') {
       list.sort((a,b)=> (b.featured?1:0)-(a.featured?1:0) || b.ts-a.ts);
@@ -927,7 +937,7 @@
     document.getElementById('emptyState').style.display = list.length ? 'none' : 'block';
 
     grid.innerHTML = list.map((it, idx) => {
-      const cat = CATS[it.category] || {label:'Other', emoji:'🗂️', color:'#94a3b8'};
+      const cat = CATS[it.category] || {label:'Other', emoji:'🗂️', color:'#64748b'};
       const isMine = mine.includes(it.id);
       const isWishlisted = wishlist.includes(it.id);
 
